@@ -1,0 +1,307 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  MEMBER
+  ARTIST
+  ADMIN
+}
+
+enum PublicationStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  PUBLISHED
+  REJECTED
+  ARCHIVED
+}
+
+enum AlbumType {
+  ALBUM
+  SINGLE
+  EP
+}
+
+enum ProductAvailability {
+  AVAILABLE
+  OUT_OF_STOCK
+  CONTACT_ARTIST
+  EXTERNAL
+}
+
+model User {
+  id          String          @id @default(cuid())
+  email       String          @unique
+  name        String
+  passwordHash String
+  role        Role            @default(MEMBER)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  playlists   Playlist[]
+  follows     Follow[]
+  favorites   Favorite[]
+  history     ListeningHistory[]
+  savedEvents EventSave[]
+  artistLinks ArtistMember[]
+  notifications Notification[]
+  sessions    Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
+model Artist {
+  id          String          @id @default(cuid())
+  name        String
+  slug        String          @unique
+  bio         String          @default("")
+  imageUrl    String?
+  genre       String?
+  status      PublicationStatus @default(DRAFT)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  members     ArtistMember[]
+  songLinks   SongArtist[]
+  albums      Album[]
+  follows     Follow[]
+  events      EventArtist[]
+  articles    Article[]
+  products    Product[]
+}
+
+model ArtistMember {
+  artistId String
+  userId   String
+  artist   Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([artistId, userId])
+}
+
+model Song {
+  id          String            @id @default(cuid())
+  title       String
+  slug        String            @unique
+  description String            @default("")
+  audioKey    String?
+  artworkUrl  String?
+  durationSec Int?
+  releaseDate DateTime?
+  lyrics      String?
+  rightsConfirmedAt DateTime?
+  status      PublicationStatus @default(DRAFT)
+  albumId     String?
+  album       Album?            @relation(fields: [albumId], references: [id], onDelete: SetNull)
+  artists     SongArtist[]
+  favorites   Favorite[]
+  history     ListeningHistory[]
+  playlistLinks PlaylistTrack[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([status, releaseDate])
+  @@index([title])
+}
+
+model SongArtist {
+  songId   String
+  artistId String
+  position Int     @default(0)
+  song     Song    @relation(fields: [songId], references: [id], onDelete: Cascade)
+  artist   Artist  @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@id([songId, artistId])
+  @@index([artistId, position])
+}
+
+model Album {
+  id          String            @id @default(cuid())
+  title       String
+  slug        String            @unique
+  type        AlbumType         @default(ALBUM)
+  description String            @default("")
+  artworkUrl  String?
+  releaseDate DateTime?
+  status      PublicationStatus @default(DRAFT)
+  artistId    String
+  artist      Artist            @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  songs       Song[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([artistId, releaseDate])
+}
+
+model Playlist {
+  id          String          @id @default(cuid())
+  title       String
+  description String          @default("")
+  isPublic    Boolean         @default(false)
+  isEditorial Boolean         @default(false)
+  artworkUrl  String?
+  ownerId     String?
+  owner       User?           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  tracks      PlaylistTrack[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([isPublic, isEditorial])
+}
+
+model PlaylistTrack {
+  playlistId String
+  songId     String
+  position   Int
+  addedAt    DateTime @default(now())
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  song       Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@id([playlistId, songId])
+  @@unique([playlistId, position])
+}
+
+model Follow {
+  userId    String
+  artistId  String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  artist    Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@id([userId, artistId])
+}
+
+model Favorite {
+  userId    String
+  songId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@id([userId, songId])
+}
+
+model ListeningHistory {
+  id            String   @id @default(cuid())
+  userId        String
+  songId        String
+  playedAt      DateTime @default(now())
+  listenedSec   Int      @default(0)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song          Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([userId, playedAt])
+  @@index([songId, playedAt])
+}
+
+model Event {
+  id          String            @id @default(cuid())
+  title       String
+  slug        String            @unique
+  description String
+  imageUrl    String?
+  startsAt    DateTime
+  endsAt      DateTime?
+  venue       String?
+  address     String?
+  registrationUrl String?
+  status      PublicationStatus @default(DRAFT)
+  artists     EventArtist[]
+  saves       EventSave[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([status, startsAt])
+}
+
+model EventArtist {
+  eventId  String
+  artistId String
+  event    Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  artist   Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, artistId])
+}
+
+model EventSave {
+  userId    String
+  eventId   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@id([userId, eventId])
+}
+
+model Article {
+  id          String            @id @default(cuid())
+  title       String
+  slug        String            @unique
+  summary     String            @default("")
+  body        String
+  imageUrl    String?
+  category    String?
+  publishedAt DateTime?
+  status      PublicationStatus @default(DRAFT)
+  artistId    String?
+  artist      Artist?           @relation(fields: [artistId], references: [id], onDelete: SetNull)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String
+  slug     String    @unique
+  products Product[]
+}
+
+model Product {
+  id          String              @id @default(cuid())
+  name        String
+  slug        String              @unique
+  description String              @default("")
+  imageUrl    String?
+  priceLabel  String?
+  availability ProductAvailability @default(CONTACT_ARTIST)
+  externalUrl String?
+  status      PublicationStatus   @default(DRAFT)
+  artistId    String
+  categoryId  String?
+  artist      Artist              @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  category    Category?           @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([status, availability])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String   @default("")
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
