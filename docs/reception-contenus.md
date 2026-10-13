@@ -2,33 +2,33 @@
 
 ## Contenus repérés
 
-Les dossiers `Yoann Adopo` et `June Grogui` transmis dans Téléchargements ont été inventoriés :
+Les dossiers `Yoann Adopo` et `June Grogui` transmis dans Téléchargements ont été inventoriés et leurs contenus audio sont maintenant publiés dans la plateforme :
 
 - 2 fichiers de biographie (celui de June est un court texte de présentation, à compléter si souhaité) ;
 - 22 fichiers audio MP3 pour Yoann et 6 pour June ;
 - 2 photos de profil, des bannières et des pochettes ;
 - certaines pistes portent dans leur nom les mentions reprise, adaptation, cover ou medley.
 
-Le catalogue d’entrée se trouve dans [`prisma/content-intake.json`](../prisma/content-intake.json). Les 28 pistes y sont en `PENDING_REVIEW`, `rightsConfirmed: false` et `published: false`. Les noms de fichiers sont conservés pour éviter d’inventer les titres, dates, albums ou crédits manquants.
+Le catalogue d’entrée se trouve dans [`prisma/content-intake.json`](../prisma/content-intake.json), et les métadonnées utilisées par le lecteur dans [`src/data/tracks.json`](../src/data/tracks.json). L’utilisateur a confirmé détenir les droits et autorisé l’écoute publique le 13 octobre 2026. Les 28 pistes sont donc marquées publiées. Les noms d’origine sont conservés là où les titres, dates, albums ou crédits restent à compléter.
 
 ## Ce qui est visible dans le prototype
 
-Deux portraits et quelques pochettes reçues sont copiés dans `public/media/` et utilisés sur l’accueil. Les fiches présentent les deux artistes et quelques titres comme **à valider**. Cela permet de vérifier le rendu des vrais visuels.
+Les portraits et pochettes reçus sont copiés dans `public/media/` et affichés sur l’accueil. Les 28 pistes sont recherchables et jouables avec le lecteur persistant.
 
-Les MP3 ne sont **pas** copiés dans `public/`, ne sont pas inclus dans Git et ne sont pas lisibles depuis le site. Leur taille cumulée est d’environ 244 Mo. `sourceAudio` dans le manifeste est un chemin relatif au dossier Téléchargements sur l’ordinateur où les fichiers ont été reçus ; il ne s’agit pas encore d’un stockage serveur.
+Les MP3 se trouvent dans `public/audio/` et sont servis publiquement par Next.js. Leur taille cumulée est d’environ 244 Mo. Ils sont inclus dans Git ; chaque piste dispose d’une URL `/audio/<identifiant>.mp3`. `sourceAudio` dans le manifeste conserve le chemin relatif d’origine pour faciliter le contrôle des fichiers.
 
-## Avant d’activer une piste
+## Métadonnées à compléter
 
-Pour chaque enregistrement, confirmer par écrit :
+La confirmation de droits a été donnée par l’utilisateur. Pour compléter les fiches, renseigner si disponible :
 
-1. qui détient les droits du master et autorise sa mise en ligne ;
-2. les droits sur la composition et les paroles ;
-3. l’autorisation pour toute adaptation, traduction, reprise, medley ou arrangement tiers ;
-4. les territoires, la durée de l’autorisation et les plateformes couvertes ;
-5. l’autorisation d’utiliser la pochette et les images.
+1. les auteurs, compositeurs, éditeurs et crédits d’interprétation ;
+2. les détails des autorisations pour les adaptations, traductions, reprises, medleys ou arrangements tiers ;
+3. les territoires et éventuelles limites de diffusion ;
+4. l’album et la date de sortie ;
+5. la durée des titres et les paroles autorisées.
 
-Renseigner ensuite les métadonnées vérifiées (titre, interprètes, auteurs/compositeurs, album éventuel, année, durée, langue et crédits). Aucun champ inconnu n’est déduit du nom de fichier.
+Les noms de fichiers sont utilisés comme titres provisoires lorsque la métadonnée précise n’a pas été fournie. Aucun album, date ou crédit n’est déduit automatiquement.
 
 ## Mise en ligne future
 
-Le projet ne comporte pas encore de formulaire de téléversement artiste ni de stockage privé connecté. Une fois les droits confirmés, l’étape technique est de créer un flux d’import authentifié qui envoie le MP3 vers un stockage objet privé, enregistre ses métadonnées en base, puis permet à un administrateur de valider et publier la piste. Les fichiers audio ne doivent pas être ajoutés au dépôt Git ni servis depuis un chemin public avant cette étape.
+Le projet ne comporte pas encore de formulaire de téléversement artiste ni de stockage objet/CDN séparé. Les MP3 sont servis depuis le dépôt pour ce premier catalogue ; pour un catalogue en croissance, déplacer les fichiers vers un stockage objet avec CDN réduira la taille du dépôt et améliorera la distribution.
