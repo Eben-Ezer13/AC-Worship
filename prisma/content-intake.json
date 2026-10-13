@@ -1,0 +1,301 @@
+{
+    "description":  "Fichiers reçus dans les dossiers Téléchargements, préparés pour revue éditoriale. Les références audio restent locales et ne sont pas publiées.",
+    "profiles":  [
+                     {
+                         "name":  "Yoann Adopo",
+                         "bio":  "Je suis Yoann Adopo, le disciple que Jésus aime.\r\n\r\nÉpoux d\u0027une seule femme, je sers le Seigneur Jésus-Christ au sein de la Famille des Assemblées Chrétiennes, notamment en tant que conducteur de louange. Sur cette chaîne, je partage ma passion pour Jésus au travers de chants (auto-composés ou interprétés) dans le but de Le célébrer, édifier Son peuple à publier Ses louanges et donner aux nations l\u0027opportunité de Le connaître. Je crois fermement qu\u0027une génération se lève pour que les vies soient transformées afin d\u0027adorer DIEU comme il se doit et pour que ceux qui adorent DIEU soient transformés à Son image.\r\n\r\nVous n\u0027êtes pas obligés de vous abonner, liker, commenter, partager, etc... MAIS SI VOUS LE FAÎTES, vous permettrez à un plus grand nombre d\u0027entendre et de vivre le plein Évangile en musique 😊.\r\n\r\nDIEU est avec vous\r\n\r\n#UneGénérationSeLèveIci",
+                         "portrait":  "/media/artists/yoann-adopo.jpg",
+                         "sourceFolder":  "Yoann Adopo",
+                         "status":  "PENDING_REVIEW"
+                     },
+                     {
+                         "name":  "June Grogui",
+                         "bio":  "Que les cœurs se tournent vers le Créateur au travers de la louange.\r\n\"Oint pour délivrer \"",
+                         "portrait":  "/media/artists/june-grogui.jpg",
+                         "sourceFolder":  "June Grogui",
+                         "status":  "PENDING_REVIEW"
+                     }
+                 ],
+    "tracks":  [
+                   {
+                       "titleFromFilename":  "Comblé de grâce",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Comblé de grâce.mp3",
+                       "bytes":  8444282,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Comblé de lEsprit (Lleno del Espíritu)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Comblé de lEsprit (Lleno del Espíritu).mp3",
+                       "bytes":  6570989,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Courage Take Heart - Hillsong (adaptation française)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Courage Take Heart - Hillsong (adaptation française).mp3",
+                       "bytes":  5074979,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "DOXOLOGIE (version acoustique)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/DOXOLOGIE (version acoustique).mp3",
+                       "bytes":  6342509,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Facedown - Matt Redman (adaptation française)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Facedown - Matt Redman (adaptation française).mp3",
+                       "bytes":  10513180,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Here As In Heaven - Elevation Worship (adaptation française)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Here As In Heaven - Elevation Worship (adaptation française).mp3",
+                       "bytes":  12674238,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Il se fait un BRUIT qui annonce la PLUIE",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Il se fait un BRUIT qui annonce la PLUIE.mp3",
+                       "bytes":  11080653,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Incomparable Est Ta Présence Nothing Like Your Presence - William McDowell (adaptation française)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Incomparable Est Ta Présence Nothing Like Your Presence - William McDowell (adaptation française).mp3",
+                       "bytes":  8254175,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Je mets mon espoir en lÉternel",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Je mets mon espoir en lÉternel.mp3",
+                       "bytes":  10478071,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Je suis là pour Toi",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Je suis là pour Toi.mp3",
+                       "bytes":  6144484,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Je viens pour T\u0027adorer",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Je viens pour T\u0027adorer.mp3",
+                       "bytes":  4251275,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Jusqu\u0027au bout - Luc Dumont (reprise)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Jusqu\u0027au bout - Luc Dumont (reprise).mp3",
+                       "bytes":  5759391,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Jusquau bout - Luc Dumont (reprise)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Jusquau bout - Luc Dumont (reprise).mp3",
+                       "bytes":  15530571,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Merci (spontané)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Merci (spontané).mp3",
+                       "bytes":  17517340,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Moyanoli - Gisèle Deleme (reprise)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Moyanoli - Gisèle Deleme (reprise).mp3",
+                       "bytes":  8130186,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Plus de Toi (medley)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Plus de Toi (medley).mp3",
+                       "bytes":  17709340,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Seul à SEUL  Alone - Clint Brown (adaptation française)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Seul à SEUL  Alone - Clint Brown (adaptation française).mp3",
+                       "bytes":  7664997,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Sois loué Oza NZAMBE - Dorcas Kaja (reprise)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Sois loué Oza NZAMBE - Dorcas Kaja (reprise).mp3",
+                       "bytes":  5223244,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Un Sujet de Fierté - Ministère de Louange de la Famille des Assemblées Chrétiennes",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Un Sujet de Fierté - Ministère de Louange de la Famille des Assemblées Chrétiennes.mp3",
+                       "bytes":  4166825,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Une chose nouvelle",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Une chose nouvelle.mp3",
+                       "bytes":  8253964,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Une Génération Se Lève Desperate People - Micah Stampley (adaptation française)",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Une Génération Se Lève Desperate People - Micah Stampley (adaptation française).mp3",
+                       "bytes":  3760787,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Vallée de BERACA",
+                       "artist":  "Yoann Adopo",
+                       "sourceAudio":  "Yoann Adopo/Music/Vallée de BERACA.mp3",
+                       "bytes":  10427957,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Oint pour délivrer - June Grogui (Audio Officiel)",
+                       "artist":  "June Grogui",
+                       "sourceAudio":  "June Grogui/Music/Oint pour délivrer - June Grogui (Audio Officiel).mp3",
+                       "bytes":  8462457,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Ressuscité - June Grogui (Audio)",
+                       "artist":  "June Grogui",
+                       "sourceAudio":  "June Grogui/Music/Ressuscité - June Grogui (Audio).mp3",
+                       "bytes":  9149681,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Reçois l\u0027adoration Worship Time - (June GROGUI cover)",
+                       "artist":  "June Grogui",
+                       "sourceAudio":  "June Grogui/Music/Reçois l\u0027adoration Worship Time - (June GROGUI cover).mp3",
+                       "bytes":  11538434,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Tu es fidèle (Paroles vidéo) - June GROGUI - Worship Time",
+                       "artist":  "June Grogui",
+                       "sourceAudio":  "June Grogui/Music/Tu es fidèle (Paroles vidéo) - June GROGUI - Worship Time.mp3",
+                       "bytes":  4906864,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Worship and Prophetic Time (LIVE RECORDING) - June Grogui",
+                       "artist":  "June Grogui",
+                       "sourceAudio":  "June Grogui/Music/Worship and Prophetic Time (LIVE RECORDING) - June Grogui.mp3",
+                       "bytes":  6800448,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   },
+                   {
+                       "titleFromFilename":  "Worship Time MEDLEY Le Seul à combler - Toi seul combles - Ébloui June Grogui",
+                       "artist":  "June Grogui",
+                       "sourceAudio":  "June Grogui/Music/Worship Time MEDLEY Le Seul à combler - Toi seul combles - Ébloui June Grogui.mp3",
+                       "bytes":  20796242,
+                       "status":  "PENDING_REVIEW",
+                       "rightsConfirmed":  false,
+                       "published":  false,
+                       "reviewNote":  "Vérifier la titularité ou les autorisations du master, de la composition, des paroles et des adaptations avant toute diffusion."
+                   }
+               ]
+}
