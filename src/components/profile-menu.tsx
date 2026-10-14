@@ -40,7 +40,7 @@ export function ProfileMenu({ name, email, role, unread = 0 }: { name: string; e
         <Link role="menuitem" href="/notifications" onClick={() => setOpen(false)}><ProfileIcon name="bell"/>Notifications{unread > 0 && <em>{unread > 9 ? "9+" : unread}</em>}<span className="profile-menu-arrow">›</span></Link>
         {role === "ARTIST" && <Link role="menuitem" href="/artist/dashboard" onClick={() => setOpen(false)}><ProfileIcon name="studio"/>Studio artiste <span className="profile-menu-arrow">›</span></Link>}
       </div>
-      <form action={signOut}><button type="submit"><ProfileIcon name="logout"/>Se déconnecter</button></form>
+      <form action={signOut} onSubmit={() => { try { window.localStorage.removeItem("acw-account-display"); } catch { /* Storage can be disabled. */ } }}><button type="submit"><ProfileIcon name="logout"/>Se déconnecter</button></form>
     </section>}
   </div>;
 }

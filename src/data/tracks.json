@@ -146,7 +146,7 @@
     "album": null,
     "duration": 1775,
     "audio": "/audio/plus-de-toi-medley.mp3",
-    "cover": "/media/releases/yoann-plus-de-toi-medley.webp",
+    "cover": "/media/releases/yoann-plus-de-toi-medley.jpg",
     "status": "PUBLISHED"
   },
   {
@@ -206,7 +206,7 @@
     "album": null,
     "duration": 736,
     "audio": "/audio/vallee-de-beraca.mp3",
-    "cover": "/media/releases/yoann-vallee-de-beraca.webp",
+    "cover": "/media/releases/yoann-vallee-de-beraca.jpg",
     "status": "PUBLISHED"
   },
   {

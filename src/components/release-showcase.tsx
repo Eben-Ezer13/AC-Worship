@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { getReleaseShowcase, type ReleaseShowcaseData } from "@/app/release-actions";
 import { ReleaseCountdown } from "@/components/release-countdown";
@@ -40,7 +39,7 @@ export function ReleaseShowcase() {
           <div className="release-subheading"><span>BIENTÔT DISPONIBLE</span><small>Le compte à rebours suit l’heure locale de votre appareil.</small></div>
           <div className="upcoming-release-grid">
             {data.upcoming.map((release) => <Link className="upcoming-release-card" href={`/artists/${release.artistSlug}#upcoming-releases`} key={release.id}>
-              <div className="upcoming-release-art">{release.artworkUrl ? <Image src={release.artworkUrl} alt={`Pochette de ${release.title}`} fill sizes="(max-width: 760px) 34vw, 150px"/> : <span>AC</span>}</div>
+              <div className="upcoming-release-art">{release.artworkUrl ? <img src={release.artworkUrl} alt={`Pochette de ${release.title}`}/> : <span>AC</span>}</div>
               <div className="upcoming-release-copy"><span>{release.artistName} · {releaseLabel(release.releaseAt)}</span><b>{release.title}</b><ReleaseCountdown releaseAt={release.releaseAt} onElapsed={refresh}/></div>
               <span className="upcoming-release-arrow" aria-hidden="true">↗</span>
             </Link>)}
@@ -54,7 +53,7 @@ export function ReleaseShowcase() {
               <Link className="latest-artist-heading" href={`/artists/${artist.artistSlug}#discography`}><span>{artist.artistName}</span><b aria-hidden="true">→</b></Link>
               <div className="latest-song-list">
                 {artist.songs.map((song) => <Link className="latest-song-row" href={`/artists/${artist.artistSlug}#discography`} key={song.id}>
-                  <span className="latest-song-art">{song.artworkUrl ? <Image src={song.artworkUrl} alt="" fill sizes="48px"/> : <span>AC</span>}</span>
+                  <span className="latest-song-art">{song.artworkUrl ? <img src={song.artworkUrl} alt=""/> : <span>AC</span>}</span>
                   <span className="latest-song-copy"><b>{song.title}</b><small>Sorti le {releaseLabel(song.releaseAt)}</small></span>
                   <span className="latest-song-open" aria-hidden="true">↗</span>
                 </Link>)}

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import trackData from "@/data/tracks.json";
 import { getAccountSummary, getFavoriteTrackIds, recordListening, toggleTrackFavorite } from "@/app/account-actions";
@@ -49,8 +48,8 @@ function Icon({ name, size = 20 }: { name: string; size?: number }) {
   return <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{paths[name] ?? paths.more}</svg>;
 }
 
-function Artwork({ color, mark, cover, className = "" }: { color: string; mark: string; cover?: string; className?: string }) {
-  return <div className={`artwork ${color} ${className}`} aria-label={`Pochette ${mark}`}>{cover ? <Image src={cover} alt="" fill sizes="(max-width: 760px) 45vw, 220px" className="cover-image"/> : <><span className="artwork-grain"/><span className="artwork-mark">{mark}</span><span className="artwork-caption">AC WORSHIP · ÉDITION</span></>}</div>;
+function Artwork({ color, mark, cover, className = "", eager = false }: { color: string; mark: string; cover?: string; className?: string; eager?: boolean }) {
+  return <div className={`artwork ${color} ${className}`} aria-label={`Pochette ${mark}`}>{cover ? <img src={cover} alt="" className="cover-image" loading={eager ? "eager" : "lazy"} decoding="async" fetchPriority={eager ? "high" : "auto"}/> : <><span className="artwork-grain"/><span className="artwork-mark">{mark}</span><span className="artwork-caption">AC WORSHIP · ÉDITION</span></>}</div>;
 }
 
 export default function Home() {
@@ -68,6 +67,7 @@ export default function Home() {
   const [expandedPlayer, setExpandedPlayer] = useState(false);
   const [playerError, setPlayerError] = useState<string | null>(null);
   const [account, setAccount] = useState<{ name: string; email: string; role: string } | null>(null);
+  const [accountResolved, setAccountResolved] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const playNextRef = useRef<() => void>(() => {});
@@ -119,7 +119,24 @@ export default function Home() {
 
   useEffect(() => {
     void getFavoriteTrackIds().then(setLiked);
-    void getAccountSummary().then(setAccount);
+    let hasCachedAccount = false;
+    try {
+      const cached = JSON.parse(window.localStorage.getItem("acw-account-display") ?? "null");
+      if (cached && typeof cached.name === "string" && typeof cached.email === "string" && ["MEMBER", "ARTIST", "ADMIN"].includes(cached.role) && Date.now() - cached.savedAt < 30 * 24 * 60 * 60 * 1000) {
+        setAccount({ name: cached.name, email: cached.email, role: cached.role });
+        setAccountResolved(true);
+        hasCachedAccount = true;
+      }
+    } catch { /* Ignore stale or unavailable browser storage. */ }
+    void getAccountSummary().then((summary) => {
+      if (summary) {
+        setAccount(summary);
+        try { window.localStorage.setItem("acw-account-display", JSON.stringify({ ...summary, savedAt: Date.now() })); } catch { /* Storage can be disabled. */ }
+      } else if (!hasCachedAccount) {
+        setAccount(null);
+      }
+      setAccountResolved(true);
+    }).catch(() => setAccountResolved(true));
     void getUnreadNotificationCount().then(setUnreadNotifications);
   }, []);
 
@@ -221,7 +238,7 @@ export default function Home() {
         <header className="topbar">
           <div className="history-controls"><button aria-label="Page précédente">‹</button><button aria-label="Page suivante">›</button></div>
           <label className="search-box"><Icon name="search" size={18}/><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Artistes, titres, albums…"/><kbd>⌘ K</kbd></label>
-          <div className="account-actions">{account ? <><Link className="account-library-link" href="/library">Ma bibliothèque</Link><Link className="notification-bell" href="/notifications" aria-label={`Notifications${unreadNotifications ? `, ${unreadNotifications} non lues` : ""}`}><Icon name="bell" size={19}/>{unreadNotifications > 0 && <span>{unreadNotifications > 9 ? "9+" : unreadNotifications}</span>}</Link>{account.role === "ARTIST" && <Link className="artist-account-link" href="/artist/dashboard">Mon espace</Link>}<ProfileMenu name={account.name} email={account.email} role={account.role} unread={unreadNotifications}/></> : <><a href="/login">Se connecter</a><a className="signup-button" href="/signup">Créer un compte</a></>}</div>
+          <div className={`account-actions${accountResolved ? " account-actions-ready" : " account-actions-pending"}`} aria-busy={!accountResolved}>{!accountResolved ? <span className="account-actions-placeholder" aria-hidden="true"/> : account ? <><Link className="account-library-link" href="/library">Ma bibliothèque</Link><Link className="notification-bell" href="/notifications" aria-label={`Notifications${unreadNotifications ? `, ${unreadNotifications} non lues` : ""}`}><Icon name="bell" size={19}/>{unreadNotifications > 0 && <span>{unreadNotifications > 9 ? "9+" : unreadNotifications}</span>}</Link>{account.role === "ARTIST" && <Link className="artist-account-link" href="/artist/dashboard">Mon espace</Link>}<ProfileMenu name={account.name} email={account.email} role={account.role} unread={unreadNotifications}/></> : <><a href="/login">Se connecter</a><a className="signup-button" href="/signup">Créer un compte</a></>}</div>
         </header>
 
         <div className="content-area">
@@ -232,7 +249,7 @@ export default function Home() {
               <div className="hero-actions"><button className="primary-button" onClick={() => playTrack(featuredTracks[0])}><Icon name="play" size={17}/>Écouter maintenant</button><Link className="text-button" href="/artists">Explorer les artistes <Icon name="arrow" size={16}/></Link></div>
               <div className="hero-credit">JUNE GROGUI <span>·</span> OINT POUR DÉLIVRER</div>
             </div>
-            <div className="hero-art-wrap"><Artwork color="cover-clay" mark="OINT" cover="/media/releases/june-oint-pour-delivrer.jpg" className="hero-art"/><span className="hero-index">01 — 02</span><span className="hero-side-note">CHANTS DE LOUANGE · ASSEMBLÉE CHRÉTIENNE</span></div>
+              <div className="hero-art-wrap"><Artwork color="cover-clay" mark="OINT" cover="/media/releases/june-oint-pour-delivrer.jpg" className="hero-art" eager/><span className="hero-index">01 — 02</span><span className="hero-side-note">CHANTS DE LOUANGE · ASSEMBLÉE CHRÉTIENNE</span></div>
           </section>
 
           <section className="section-block" id="releases">
@@ -251,7 +268,7 @@ export default function Home() {
 
           <section className="section-block artist-section" id="artists">
             <div className="section-heading"><div><div className="section-kicker">LES VOIX DE L’AC</div><h2>Artistes à découvrir</h2></div><span className="catalogue-count">2 profils reçus</span></div>
-            <div className="artist-grid">{artists.map((artist) => <Link className="artist-card" key={artist.name} href={`/artists/${artist.name.toLowerCase().replaceAll(" ", "-")}`}><div className={`artist-portrait ${artist.color}`}><Image src={artist.image} alt={`Portrait de ${artist.name}`} fill sizes="(max-width: 760px) 45vw, 220px"/><i className="portrait-ring"/></div><b>{artist.name}</b><small>{artist.role}</small><p>{artist.bio}</p><span className="artist-open">Voir ses chants →</span></Link>)}</div>
+            <div className="artist-grid">{artists.map((artist) => <Link className="artist-card" key={artist.name} href={`/artists/${artist.name.toLowerCase().replaceAll(" ", "-")}`}><div className={`artist-portrait ${artist.color}`}><img src={artist.image} alt={`Portrait de ${artist.name}`} loading="lazy"/><i className="portrait-ring"/></div><b>{artist.name}</b><small>{artist.role}</small><p>{artist.bio}</p><span className="artist-open">Voir ses chants →</span></Link>)}</div>
           </section>
 
           <section className="editorial-strip" id="events"><div><div className="section-kicker">RENDEZ-VOUS</div><h2>La musique se vit<br/>aussi ensemble.</h2><p>Concerts, rencontres et temps forts de la communauté.</p></div><Link className="editorial-link" href="/events">Découvrir les événements <Icon name="arrow" size={16}/></Link><div className="editorial-number">AC <span>·</span> ENSEMBLE</div></section>
