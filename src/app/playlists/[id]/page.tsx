@@ -16,11 +16,18 @@ export default async function PlaylistPage({ params }: { params: Promise<{ id: s
       tracks: {
         where: { song: { status: "PUBLISHED" } },
         orderBy: { position: "asc" },
-        include: { song: { include: { artists: { include: { artist: { select: { name: true, slug: true } } } } } } },
+        include: {
+          song: {
+            include: {
+              album: { select: { artworkUrl: true } },
+              artists: { include: { artist: { select: { name: true, slug: true, imageUrl: true } } } },
+            },
+          },
+        },
       },
     },
   });
   if (!playlist) notFound();
-  const tracks = playlist.tracks.map(({ song }) => ({ id: song.id, title: song.title, audioKey: song.audioKey, artworkUrl: song.artworkUrl, artists: song.artists.map(({ artist }) => ({ artist })) }));
+  const tracks = playlist.tracks.map(({ song }) => ({ id: song.id, title: song.title, audioKey: song.audioKey, artworkUrl: song.artworkUrl ?? song.album?.artworkUrl ?? song.artists.find(({ artist }) => artist.imageUrl)?.artist.imageUrl ?? null, artists: song.artists.map(({ artist }) => ({ artist })) }));
   return <main className="catalog-page playlist-page"><header className="catalog-top"><Link href="/library">← Ma bibliothèque</Link><Link href="/profile">Mon profil</Link></header><span className="section-kicker">PLAYLIST PERSONNELLE</span><PlaylistPlayer title={playlist.title} tracks={tracks}/></main>;
 }

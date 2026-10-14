@@ -1,4 +1,4 @@
-const CACHE = "ac-worship-shell-v1";
+const CACHE = "ac-worship-shell-v2";
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(["/", "/icons/ac-worship-192.png", "/icons/ac-worship-512.png"])));
   self.skipWaiting();

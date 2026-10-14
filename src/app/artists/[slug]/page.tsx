@@ -20,13 +20,15 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
   let products: { id: string; name: string; description: string; priceLabel: string | null }[] = [];
   let monthlyListeners: number | null = null;
   try {
-    const record = await prisma.artist.findUnique({ where: { slug }, include: { songLinks: { where: { song: { status: "PUBLISHED" } }, include: { song: true }, orderBy: { position: "asc" } }, products: { where: { status: "PUBLISHED" }, orderBy: { createdAt: "desc" } } } });
+    const record = await prisma.artist.findUnique({ where: { slug }, include: { songLinks: { where: { song: { status: "PUBLISHED" } }, include: { song: { include: { album: true } } }, orderBy: { position: "asc" } }, products: { where: { status: "PUBLISHED" }, orderBy: { createdAt: "desc" } } } });
     if (record?.status === "PUBLISHED") {
       artist = { name: record.name, slug: record.slug, role: record.genre ?? "Artiste · Assemblée Chrétienne", bio: record.bio, image: record.imageUrl ?? fallback?.image ?? "/media/artists/yoann-adopo.jpg" };
       const knownTitles = new Set(songs.map((song) => normalizedTitle(song.title)));
       const coverFallback = artist?.image ?? fallback?.image ?? "/media/artists/yoann-adopo.jpg";
+      const now = new Date();
       const additionalSongs = record.songLinks
-        .map(({ song }) => ({ id: song.slug, title: song.title, album: song.albumId ? "Album" : "Single", cover: song.artworkUrl ?? coverFallback, audio: song.audioKey ?? "", duration: 0 }))
+        .filter(({ song }) => (!song.releaseDate || song.releaseDate <= now) && (!song.album?.releaseDate || song.album.releaseDate <= now))
+        .map(({ song }) => ({ id: song.slug, title: song.title, album: song.album?.title ?? "Single", cover: song.artworkUrl ?? song.album?.artworkUrl ?? coverFallback, audio: song.audioKey ?? "", duration: 0 }))
         .filter((song) => {
           const normalized = normalizedTitle(song.title);
           if (!normalized || knownTitles.has(normalized)) return false;

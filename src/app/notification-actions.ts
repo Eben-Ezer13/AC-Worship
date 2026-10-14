@@ -9,8 +9,9 @@ const since = () => new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
 
 async function syncNotifications(userId: string) {
   const cutoff = since();
+  const now = new Date();
   const [songs, articles, events, products] = await Promise.all([
-    prisma.song.findMany({ where: { status: "PUBLISHED", OR: [{ releaseDate: { gte: cutoff } }, { releaseDate: null, updatedAt: { gte: cutoff } }] }, include: { artists: { include: { artist: { select: { name: true, slug: true } } } }, album: { select: { title: true } } }, orderBy: { updatedAt: "desc" }, take: 60 }),
+    prisma.song.findMany({ where: { status: "PUBLISHED", OR: [{ releaseDate: { gte: cutoff, lte: now } }, { releaseDate: null, updatedAt: { gte: cutoff, lte: now } }] }, include: { artists: { include: { artist: { select: { name: true, slug: true } } } }, album: { select: { title: true } } }, orderBy: { updatedAt: "desc" }, take: 60 }),
     prisma.article.findMany({ where: { status: "PUBLISHED", OR: [{ publishedAt: { gte: cutoff } }, { publishedAt: null, updatedAt: { gte: cutoff } }] }, include: { artist: { select: { name: true, slug: true } } }, orderBy: { publishedAt: "desc" }, take: 40 }),
     prisma.event.findMany({ where: { status: "PUBLISHED", startsAt: { gte: cutoff } }, include: { artists: { include: { artist: { select: { name: true, slug: true } } } } }, orderBy: { startsAt: "asc" }, take: 40 }),
     prisma.product.findMany({ where: { status: "PUBLISHED", createdAt: { gte: cutoff } }, include: { artist: { select: { name: true, slug: true } } }, orderBy: { createdAt: "desc" }, take: 40 }),

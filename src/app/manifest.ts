@@ -13,7 +13,10 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#10120e",
     icons: [
       { src: "/icons/ac-worship-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/icons/ac-worship-192.png", sizes: "192x192", type: "image/png", purpose: "maskable" },
+      { src: "/icons/ac-worship-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
       { src: "/icons/ac-worship-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      { src: "/favicon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
     ],
   };
 }

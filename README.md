@@ -23,7 +23,9 @@ Sans PostgreSQL, la découverte des profils et la lecture du catalogue restent d
 - `/artist/dashboard` : mise à jour du profil, soumission de chants et de produits pour validation.
 - Le lecteur de la page d’accueil permet d’agrandir la lecture avec la pochette en arrière-plan.
 
-Les chants sont publiés après confirmation des droits et vérification du fichier. Le chemin audio doit déjà pointer vers un fichier présent dans `public/audio/`. L’envoi direct de fichiers par les artistes nécessite un stockage objet persistant à configurer avant déploiement.
+Les artistes peuvent envoyer leurs fichiers audio et visuels depuis le studio. Les droits de publication sont confirmés lors de l’ajout d’un chant.
+
+Pour activer l’envoi des fichiers depuis le studio, créez un stockage Vercel Blob, copiez sa variable `BLOB_READ_WRITE_TOKEN` dans `.env.local`, puis ajoutez-la aussi aux variables de déploiement Vercel. Les fichiers sont téléversés directement depuis le navigateur et restent accessibles après un redéploiement.
 
 ## Commandes
 
