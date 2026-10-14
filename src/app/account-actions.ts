@@ -42,6 +42,16 @@ export async function getAccountSummary() {
   }
 }
 
+export async function updateAccountProfile(formData: FormData) {
+  const { currentUser } = await import("@/lib/auth");
+  const user = await currentUser();
+  if (!user) redirect("/login");
+  const name = String(formData.get("name") ?? "").trim();
+  if (name.length < 2 || name.length > 80) redirect("/profile?error=name");
+  await prisma.user.update({ where: { id: user.id }, data: { name } });
+  redirect("/profile?saved=profile");
+}
+
 export async function signOut() {
   const token = (await cookies()).get("acw_session")?.value;
   if (token) await prisma.session.deleteMany({ where: { tokenHash: createHash("sha256").update(token).digest("hex") } });
@@ -119,6 +129,38 @@ export async function submitProduct(formData: FormData) {
   const slug = `${name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${Date.now().toString(36)}`;
   await prisma.product.create({ data: { name, slug, description: String(formData.get("description") ?? ""), priceLabel: String(formData.get("price") ?? "") || null, status: "PUBLISHED", artistId: link.artistId } });
   redirect("/artist/dashboard?saved=product");
+}
+
+function makeSlug(value: string) {
+  return `${value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${Date.now().toString(36)}`;
+}
+
+export async function submitArtistNews(formData: FormData) {
+  const { currentUser } = await import("@/lib/auth");
+  const user = await currentUser();
+  if (!user || user.role !== "ARTIST") redirect("/login");
+  const membership = await prisma.artistMember.findFirst({ where: { userId: user.id }, select: { artistId: true } });
+  if (!membership) redirect("/artist/dashboard?error=missing-profile");
+  const title = String(formData.get("title") ?? "").trim();
+  const body = String(formData.get("body") ?? "").trim();
+  if (title.length < 3 || body.length < 10) redirect("/artist/dashboard?error=invalid-news");
+  await prisma.article.create({ data: { title, slug: makeSlug(title), body, summary: String(formData.get("summary") ?? "").trim(), imageUrl: String(formData.get("imageUrl") ?? "").trim() || null, category: "Actualité artiste", artistId: membership.artistId, publishedAt: new Date(), status: "PUBLISHED" } });
+  redirect("/artist/dashboard?saved=news");
+}
+
+export async function submitArtistEvent(formData: FormData) {
+  const { currentUser } = await import("@/lib/auth");
+  const user = await currentUser();
+  if (!user || user.role !== "ARTIST") redirect("/login");
+  const membership = await prisma.artistMember.findFirst({ where: { userId: user.id }, select: { artistId: true } });
+  if (!membership) redirect("/artist/dashboard?error=missing-profile");
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const startsAt = new Date(String(formData.get("startsAt") ?? ""));
+  if (title.length < 3 || description.length < 10 || !Number.isFinite(startsAt.getTime())) redirect("/artist/dashboard?error=invalid-event");
+  const venue = String(formData.get("venue") ?? "").trim();
+  const event = await prisma.event.create({ data: { title, slug: makeSlug(title), description, startsAt, venue: venue || null, registrationUrl: String(formData.get("registrationUrl") ?? "").trim() || null, status: "PUBLISHED", artists: { create: { artistId: membership.artistId } } } });
+  redirect(`/artist/dashboard?saved=event&event=${event.slug}`);
 }
 
 export async function toggleFavorite(formData: FormData) {
