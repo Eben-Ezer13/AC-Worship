@@ -1,6 +1,26 @@
 import Link from "next/link";
 import { signUp } from "@/app/account-actions";
+
 export default async function Signup({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
-  return <main className="account-page"><section className="account-card"><Link href="/" className="account-brand">AC WORSHIP</Link><span className="section-kicker">REJOIGNEZ LA COMMUNAUTÉ</span><h1>Votre musique, votre espace.</h1><p>Créez votre compte pour enregistrer vos favoris et composer votre bibliothèque.</p>{error && <div className="form-notice">{error === "exists" ? "Un compte existe déjà avec cet e-mail." : error === "database" ? "Base de données non configurée ou inaccessible." : "Vérifiez votre nom, votre e-mail et choisissez un mot de passe de 10 caractères minimum."}</div>}<form action={signUp}><label>Nom complet ou nom d’artiste<input name="name" autoComplete="name" minLength={2} required/></label><label>E-mail<input name="email" type="email" autoComplete="email" required/></label><label>Mot de passe<input name="password" type="password" autoComplete="new-password" minLength={10} required/></label><label>Type de compte<select name="type"><option value="member">Auditeur · créer ma bibliothèque</option><option value="artist">Artiste · gérer mon profil et mes contenus</option></select></label><button className="primary-button">Créer mon compte</button></form><div className="account-switch">Déjà inscrit ? <Link href="/login">Se connecter</Link></div></section></main>;
+
+  return (
+    <main className="account-page">
+      <section className="account-card">
+        <Link href="/" className="account-brand">AC WORSHIP</Link>
+        <span className="section-kicker">REJOIGNEZ LA COMMUNAUT&Eacute;</span>
+        <h1>Votre musique,<br />votre espace.</h1>
+        <p>Cr&eacute;ez votre compte pour enregistrer vos favoris et composer votre biblioth&egrave;que.</p>
+        {error && <div className="form-notice">{error === "exists" ? "Un compte existe d&eacute;j&agrave; avec cet e-mail." : error === "database" ? "Base de donn&eacute;es non configur&eacute;e ou inaccessible." : "V&eacute;rifiez votre nom, votre e-mail et choisissez un mot de passe de 10 caract&egrave;res minimum."}</div>}
+        <form action={signUp}>
+          <label>Nom complet<input name="name" autoComplete="name" minLength={2} required /></label>
+          <label>Adresse e-mail<input name="email" type="email" autoComplete="email" required /></label>
+          <label>Mot de passe<input name="password" type="password" autoComplete="new-password" minLength={10} required /></label>
+          <button className="primary-button">Cr&eacute;er mon espace</button>
+        </form>
+        <div className="account-switch">D&eacute;j&agrave; inscrit ? <Link href="/login">Se connecter</Link></div>
+        <p className="account-note">Les comptes artistes sont reli&eacute;s &agrave; leur profil par l&rsquo;&eacute;quipe AC Worship.</p>
+      </section>
+    </main>
+  );
 }

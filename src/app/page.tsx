@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import trackData from "@/data/tracks.json";
-import { getFavoriteTrackIds, recordListening, toggleTrackFavorite } from "@/app/account-actions";
+import { getAccountSummary, getFavoriteTrackIds, recordListening, signOut, toggleTrackFavorite } from "@/app/account-actions";
 
 type Track = { id: string; title: string; artist: string; album: string; duration: number; audio: string; cover?: string; status: string; color: string };
 
@@ -61,6 +61,7 @@ export default function Home() {
   const [liked, setLiked] = useState<string[]>([]);
   const [autoplay, setAutoplay] = useState(false);
   const [expandedPlayer, setExpandedPlayer] = useState(false);
+  const [account, setAccount] = useState<{ name: string; role: string } | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const filteredTracks = useMemo(() => tracks.filter((track) => `${track.title} ${track.artist}`.toLowerCase().includes(query.toLowerCase())), [query]);
 
@@ -74,7 +75,10 @@ export default function Home() {
     if (match) { setActiveTrack(match); setAutoplay(true); }
   }, []);
 
-  useEffect(() => { void getFavoriteTrackIds().then(setLiked); }, []);
+  useEffect(() => {
+    void getFavoriteTrackIds().then(setLiked);
+    void getAccountSummary().then(setAccount);
+  }, []);
 
   useEffect(() => {
     if (!autoplay || !audioRef.current) return;
@@ -152,7 +156,7 @@ export default function Home() {
         <header className="topbar">
           <div className="history-controls"><button aria-label="Page précédente">‹</button><button aria-label="Page suivante">›</button></div>
           <label className="search-box"><Icon name="search" size={18}/><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Artistes, titres, albums…"/><kbd>⌘ K</kbd></label>
-          <div className="account-actions"><a href="/artist/dashboard">Studio artiste</a><a href="/login">Se connecter</a><a className="signup-button" href="/signup">Créer un compte</a></div>
+          <div className="account-actions">{account ? <><Link className="account-library-link" href="/library">Ma bibliothèque</Link>{account.role === "ARTIST" && <Link className="artist-account-link" href="/artist/dashboard">Mon espace</Link>}<span className="account-avatar" title={account.name}>{account.name.slice(0, 1).toUpperCase()}</span><form action={signOut}><button className="account-signout">Déconnexion</button></form></> : <><a href="/login">Se connecter</a><a className="signup-button" href="/signup">Créer un compte</a></>}</div>
         </header>
 
         <div className="content-area">
@@ -196,9 +200,9 @@ export default function Home() {
       </aside>
       <audio ref={audioRef} src={activeTrack.audio} preload="metadata" loop={repeat} hidden onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)} onDurationChange={(event) => setDuration(event.currentTarget.duration)} onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} onEnded={playNext}/>
 
-      {expandedPlayer && <section className="expanded-player" style={{ "--player-art": `url("${activeTrack.cover ?? "/media/artists/june-grogui.jpg"}")` } as React.CSSProperties} aria-label="Lecteur agrandi"><div className="expanded-backdrop"/><div className="expanded-top"><a href="#home" onClick={(event) => {event.preventDefault(); setExpandedPlayer(false);}}>↓ Réduire</a><span>EN LECTURE</span><button onClick={() => setExpandedPlayer(false)} aria-label="Fermer">×</button></div><div className="expanded-content"><Artwork color={activeTrack.color} mark="AC WORSHIP" cover={activeTrack.cover} className="expanded-cover"/><div className="expanded-meta"><span>{activeTrack.artist}</span><h2>{activeTrack.title}</h2><p>{activeTrack.album}</p></div><div className="expanded-actions"><button className={liked.includes(activeTrack.id) ? "is-liked" : ""} onClick={toggleLike} aria-label="Ajouter aux titres likés"><Icon name="heart" size={24}/></button></div><div className="expanded-progress"><input aria-label="Position dans le titre" type="range" min="0" max={duration || 1} step="0.1" value={Math.min(currentTime, duration || 1)} style={{ "--range-fill": `${duration ? (currentTime / duration) * 100 : 0}%` } as React.CSSProperties} onChange={(event) => {const nextTime = Number(event.target.value); setCurrentTime(nextTime); if (audioRef.current) audioRef.current.currentTime = nextTime;}}/><div><span>{formatTime(currentTime)}</span><span>{formatTime(duration)}</span></div></div><div className="expanded-controls"><button onClick={playPrevious} aria-label="Précédent"><Icon name="prev" size={24}/></button><button className="expanded-play" onClick={togglePlayback} aria-label={isPlaying ? "Pause" : "Lecture"}><Icon name={isPlaying ? "pause" : "play"} size={24}/></button><button onClick={playNext} aria-label="Suivant"><Icon name="next" size={24}/></button></div></div></section>}
+      {expandedPlayer && <section className="expanded-player" style={{ "--player-art": `url("${activeTrack.cover ?? "/media/artists/june-grogui.jpg"}")` } as React.CSSProperties} aria-label="Lecteur agrandi"><div className="expanded-backdrop"/><div className="expanded-top"><a href="#home" onClick={(event) => {event.preventDefault(); setExpandedPlayer(false);}}>Reduire le lecteur</a><span>EN COURS D'ECOUTE</span><button onClick={() => setExpandedPlayer(false)} aria-label="Fermer">Ã—</button></div><div className="expanded-content"><Artwork color={activeTrack.color} mark="AC WORSHIP" cover={activeTrack.cover} className="expanded-cover"/><div className="expanded-details"><div className="expanded-meta"><span>{activeTrack.artist}</span><h2>{activeTrack.title}</h2><p>{activeTrack.album}</p></div><div className="expanded-actions"><button className={liked.includes(activeTrack.id) ? "is-liked" : ""} onClick={toggleLike} aria-label={liked.includes(activeTrack.id) ? "Retirer des titres favoris" : "Ajouter aux titres favoris"}><Icon name="heart" size={20}/></button></div><div className="expanded-progress"><input aria-label="Position dans le titre" type="range" min="0" max={duration || 1} step="0.1" value={Math.min(currentTime, duration || 1)} style={{ "--range-fill": `${duration ? (currentTime / duration) * 100 : 0}%` } as React.CSSProperties} onChange={(event) => {const nextTime = Number(event.target.value); setCurrentTime(nextTime); if (audioRef.current) audioRef.current.currentTime = nextTime;}}/><div><span>{formatTime(currentTime)}</span><span>{formatTime(duration)}</span></div></div><div className="expanded-controls"><button onClick={playPrevious} aria-label="Titre precedent"><Icon name="prev" size={22}/></button><button className="expanded-play" onClick={togglePlayback} aria-label={isPlaying ? "Mettre en pause" : "Lire le titre"}><Icon name={isPlaying ? "pause" : "play"} size={22}/></button><button onClick={playNext} aria-label="Titre suivant"><Icon name="next" size={22}/></button></div></div></div></section>}
 
-      <nav className="mobile-nav" aria-label="Navigation mobile"><a className="mobile-selected" href="#home"><Icon name="home" size={20}/><span>Accueil</span></a><Link href="/artists"><Icon name="search" size={20}/><span>Artistes</span></Link><Link href="/library"><Icon name="library" size={20}/><span>Bibliothèque</span></Link><Link href="/artist/dashboard"><Icon name="calendar" size={20}/><span>Studio</span></Link></nav>
+      <nav className="mobile-nav" aria-label="Navigation mobile"><a className="mobile-selected" href="#home"><Icon name="home" size={20}/><span>Accueil</span></a><Link href="/artists"><Icon name="search" size={20}/><span>Artistes</span></Link><Link href="/library"><Icon name="library" size={20}/><span>Bibliothèque</span></Link>{account?.role === "ARTIST" && <Link href="/artist/dashboard"><Icon name="calendar" size={20}/><span>Mon espace</span></Link>}</nav>
     </main>
   );
 }

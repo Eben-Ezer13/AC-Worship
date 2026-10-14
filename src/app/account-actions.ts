@@ -11,16 +11,14 @@ export async function signUp(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
-  const type = String(formData.get("type") ?? "member");
   if (name.length < 2 || !/^\S+@\S+\.\S+$/.test(email) || password.length < 10) redirect("/signup?error=invalid");
   try {
     const alreadyExists = await prisma.user.findUnique({ where: { email }, select: { id: true } });
     if (alreadyExists) redirect("/signup?error=exists");
-    const user = await prisma.user.create({ data: { name, email, passwordHash: hashPassword(password), role: type === "artist" ? "ARTIST" : "MEMBER" } });
-    if (type === "artist") await prisma.$transaction(async (tx) => { const artist = await tx.artist.create({ data: { name, slug: `${name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${user.id.slice(-6)}`, status: "PUBLISHED" } }); await tx.artistMember.create({ data: { artistId: artist.id, userId: user.id } }); });
+    const user = await prisma.user.create({ data: { name, email, passwordHash: hashPassword(password), role: "MEMBER" } });
     await createSession(user.id);
   } catch (error) { if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) throw error; redirect("/signup?error=database"); }
-  redirect(type === "artist" ? "/artist/dashboard" : "/library");
+  redirect("/");
 }
 
 export async function signIn(formData: FormData) {
@@ -31,7 +29,17 @@ export async function signIn(formData: FormData) {
     if (!user || !verifyPassword(password, user.passwordHash)) redirect("/login?error=credentials");
     await createSession(user.id);
   } catch (error) { if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) throw error; redirect("/login?error=database"); }
-  redirect("/library");
+  redirect("/");
+}
+
+export async function getAccountSummary() {
+  const { currentUser } = await import("@/lib/auth");
+  try {
+    const user = await currentUser();
+    return user ? { name: user.name, role: user.role } : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function signOut() {

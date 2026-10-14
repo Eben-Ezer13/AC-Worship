@@ -1,0 +1,123 @@
+:root{--bg:#0d0f0d;--surface:#151814;--surface-2:#1c211b;--line:#2b3029;--text:#f4f3ed;--muted:#a4a79d;--accent:#d7dfb1;--accent-dark:#28301e}
+body{background:radial-gradient(ellipse at 72% -15%,#28302155,transparent 38%),#0d0f0d}
+.app-shell{padding-bottom:104px}
+.sidebar{background:#111410ed;border-color:#ffffff0b;backdrop-filter:blur(20px);padding:30px 18px 22px}
+.brand{font-size:14px;letter-spacing:.2em;margin-bottom:42px}
+.nav-item{height:44px;border-radius:9px;font-size:12px}
+.nav-item.selected{background:linear-gradient(100deg,#cbd59d1b,#cbd59d08);box-shadow:inset 2px 0 #d2dba5}
+.topbar{height:78px;border-color:#ffffff0b;background:#0d0f0dec}
+.search-box{height:42px;border-radius:999px;background:#161914;border-color:#ffffff12}
+.search-box:focus-within{border-color:#c9d39c88;box-shadow:0 0 0 3px #cbd59d12}
+.account-actions{gap:14px;font-size:11px}
+.account-actions>a{color:#d0d1c8}
+.signup-button{border:0;border-radius:999px;background:#d7dfb1;color:#202419!important;padding:11px 17px;font-size:10px}
+.signup-button:hover{background:#e6ebca}
+.account-actions form{margin:0}
+.account-signout{border:0;background:transparent;color:#aeb0a5;font-size:10px;padding:9px 2px}
+.account-avatar{width:31px;height:31px;border:1px solid #d5ddad55;border-radius:50%;display:grid;place-items:center;background:#252b20;color:#e8edcd;font-weight:700;font-size:12px}
+.account-library-link,.artist-account-link{white-space:nowrap}
+.content-area{max-width:1510px}
+.hero{min-height:430px;margin:27px 0 62px;border:1px solid #ffffff10;border-radius:22px;background:radial-gradient(ellipse at 80% 48%,#89906a24,transparent 40%),linear-gradient(120deg,#181d17,#20251c 68%,#27251f);box-shadow:0 24px 80px #0002}
+.hero:after{background:linear-gradient(90deg,#181d17 0%,#181d17 33%,#181d17cc 53%,transparent 100%)}
+.hero-text{padding:56px 24px 34px 52px}
+.hero h1{font-size:clamp(42px,4.5vw,62px);line-height:1.06;margin:32px 0 18px}
+.hero-text>p{font-size:13px;line-height:1.9;color:#c1c4b9}
+.primary-button{height:43px;padding:0 20px;border-radius:999px;font-size:11px;box-shadow:0 8px 20px #0002}
+.text-button{font-size:11px}
+.hero-art{border-radius:8px;box-shadow:0 30px 80px #0009}
+.section-block{margin-bottom:62px}
+.section-heading{margin-bottom:22px}
+.section-heading h2,.editorial-strip h2{font-size:24px;letter-spacing:-.045em}
+.section-kicker{letter-spacing:.2em;color:#a5a995}
+.release-grid{gap:20px}
+.release-card{padding:10px;border:1px solid transparent;border-radius:15px;transition:background .2s,border-color .2s,transform .2s}
+.release-card:hover{background:#ffffff08;border-color:#ffffff0b;transform:translateY(-3px)}
+.release-card .artwork{border-radius:10px;box-shadow:0 12px 28px #0003}
+.release-title{font-size:12px;margin-top:13px}
+.release-meta{font-size:10px}
+.card-play{border-radius:50%;height:38px;width:38px;background:#d7dfb1}
+.track-list{border-top-color:#ffffff12}
+.track-row{height:66px;border-bottom-color:#ffffff0c;border-radius:10px;padding:0 10px;grid-template-columns:26px 42px minmax(150px,1.3fr) minmax(100px,1fr) 38px 24px}
+.track-row:hover{background:#ffffff08}
+.track-info b{font-size:11px}
+.artist-grid{gap:20px}
+.artist-card{padding:10px;border:1px solid transparent;border-radius:15px;transition:transform .2s,background .2s,border-color .2s}
+.artist-card:hover{background:#ffffff08;border-color:#ffffff0b}
+.artist-portrait{border-radius:12px;aspect-ratio:1.08;box-shadow:0 14px 30px #0003}
+.artist-card b{font-size:12px}
+.artist-card small{font-size:9px}
+.editorial-strip{border:1px solid #ffffff10;border-radius:18px;background:radial-gradient(ellipse at 84% 45%,#66734c25,transparent 34%),linear-gradient(115deg,#171b16,#20231c);padding:34px 36px;min-height:230px}
+.editorial-link{border:1px solid #ffffff20;border-radius:999px;padding:12px 16px}
+.footer{padding:0 5px}
+.now-playing{height:92px;padding:0 28px;grid-template-columns:minmax(220px,1fr) minmax(300px,1.2fr) minmax(180px,1fr);background:#111410f5;border-top:1px solid #ffffff13;backdrop-filter:blur(22px)}
+.now-cover{height:52px;width:52px;border-radius:7px}
+.now-track-meta b{font-size:11px}
+.now-track-meta span{font-size:10px}
+.player-controls button{color:#a7aa9d}
+.player-controls .main-play{width:36px;height:36px;border-radius:50%;background:#e5e8dc;color:#171a14}
+.player-controls .main-play:hover{transform:scale(1.05)}
+.progress-row,.player-extra{color:#a9aca1}
+.progress-row input,.player-extra input,.expanded-progress input,.mini-audio input{accent-color:#d7dfb1}
+.expanded-player{background:#10130f}
+.expanded-backdrop{opacity:.58}
+.expanded-player{background:#090a08}
+.expanded-backdrop{inset:-14%;filter:blur(54px) saturate(.78);opacity:.42}
+.expanded-top{padding:24px clamp(20px,4vw,58px);letter-spacing:.18em}
+.expanded-top a{display:inline-flex;align-items:center;gap:9px;text-decoration:none;letter-spacing:0;color:#e0e2d8}
+.expanded-top a:before{content:"";width:30px;height:30px;border:1px solid #ffffff27;border-radius:50%;background:linear-gradient(135deg,#ffffff18,#ffffff05)}
+.expanded-top span{color:#aeb19f;font-size:9px}
+.expanded-top button{width:38px;height:38px;border:1px solid #ffffff24;border-radius:50%;background:#10120dbb;color:#f3f3eb;font-size:23px;line-height:1}
+.expanded-content{width:min(1100px,88vw);min-height:0;margin:auto;display:grid;grid-template-columns:minmax(280px, min(47vh, 530px)) minmax(320px,1fr);align-items:center;gap:clamp(38px,7vw,100px);padding:10px 0 42px}
+.expanded-cover{width:100%;aspect-ratio:1;border-radius:12px;overflow:hidden;box-shadow:0 28px 90px #0009,0 0 0 1px #ffffff18}
+.expanded-cover .cover-image{object-fit:cover}
+.expanded-details{position:relative;display:grid;gap:24px;max-width:490px}
+.expanded-meta span{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#d0d4b2}
+.expanded-meta h2{font:500 clamp(30px,4vw,54px)/1.08 var(--font-display);letter-spacing:-.055em;margin:10px 0 8px;overflow-wrap:anywhere}
+.expanded-meta p{font-size:12px;color:#aeb19f;margin:0}
+.expanded-actions{position:absolute;right:0;top:4px}
+.expanded-actions button{width:42px;height:42px;border:1px solid #ffffff1b;border-radius:50%;background:#ffffff08;display:grid;place-items:center}
+.expanded-progress input{appearance:none;background:linear-gradient(to right,#d7dfb1 var(--range-fill),#ffffff2b var(--range-fill));cursor:pointer}
+.expanded-progress input::-webkit-slider-thumb{appearance:none;width:12px;height:12px;border-radius:50%;background:#f3f4e9;box-shadow:0 0 0 4px #d7dfb126}
+.expanded-progress input::-moz-range-thumb{width:12px;height:12px;border:0;border-radius:50%;background:#f3f4e9;box-shadow:0 0 0 4px #d7dfb126}
+.expanded-progress>div{font-variant-numeric:tabular-nums}
+.expanded-controls{justify-content:flex-start;gap:22px}
+.expanded-controls button{width:44px;height:44px;display:grid;place-items:center;color:#d5d7cb}
+.expanded-controls .expanded-play{width:58px;height:58px;background:#d7dfb1;color:#202419;box-shadow:0 8px 24px #0004}
+.expanded-controls .expanded-play:hover{transform:scale(1.04)}
+.account-page{background:radial-gradient(ellipse at 50% 0,#49533b55,transparent 42%),#0d0f0d;padding:42px 20px}
+.account-card{width:min(480px,100%);padding:44px;border:1px solid #ffffff13;border-radius:24px;background:linear-gradient(150deg,#191d18ed,#121511f2);box-shadow:0 30px 100px #0006;backdrop-filter:blur(18px)}
+.account-brand{display:inline-flex;margin-bottom:39px;color:#e2e6d2;letter-spacing:.2em;font-size:12px}
+.account-card h1{font:600 clamp(34px,6vw,48px)/1.05 var(--font-display);letter-spacing:-.06em;margin:10px 0 15px}
+.account-card>p{color:#adb0a5;line-height:1.75}
+.account-card form{display:grid;gap:17px;margin-top:27px}
+.account-card form label{display:grid;gap:8px;color:#d7d9d0;font-size:11px}
+.account-card input{height:45px;border:1px solid #ffffff17;border-radius:10px;background:#0e110e;color:#f3f3ec;padding:0 13px;outline:none}
+.account-card input:focus{border-color:#cbd59d99;box-shadow:0 0 0 3px #cbd59d18}
+.account-card form .primary-button{width:100%;justify-content:center;margin-top:5px}
+.account-switch{margin-top:22px;color:#aaada2;font-size:11px}
+.account-switch a{color:#e0e7c0}
+.account-note{margin:26px 0 0!important;padding-top:19px;border-top:1px solid #ffffff12;font-size:10px}
+.form-notice{border-radius:10px}
+.catalog-page{background:radial-gradient(ellipse at 78% 0,#3b442d66,transparent 36%),#0d0f0d}
+.catalog-top{margin-bottom:58px}
+.directory-card{overflow:hidden;border:1px solid #ffffff10;border-radius:16px;background:#181c17;box-shadow:0 16px 40px #0002}
+.directory-card:hover{background:#1d221b}
+.artist-hero-image{border-radius:18px;box-shadow:0 25px 70px #0005}
+.artist-hero{gap:clamp(28px,6vw,82px)}
+.song-directory article{border-color:#ffffff10;padding:14px 10px;border-radius:10px}
+.song-directory article:hover{background:#ffffff06}
+.song-directory article img,.song-placeholder{border-radius:7px}
+.mini-audio{display:grid;grid-template-columns:34px 32px minmax(90px,1fr) auto;align-items:center;gap:10px;width:min(430px,100%);min-height:42px;margin-top:9px;padding:5px 10px;border:1px solid #ffffff12;border-radius:999px;background:#ffffff08;color:#d8ddca}
+.mini-audio-play{height:30px;width:30px;display:grid;place-items:center;border:0;border-radius:50%;background:#d7dfb1;color:#202419}
+.mini-audio-play svg{width:14px;height:14px;fill:currentColor}
+.mini-audio-wave{height:18px;display:flex;align-items:center;gap:2px}
+.mini-audio-wave i{width:2px;height:7px;border-radius:3px;background:#a5ad84;opacity:.75}
+.mini-audio-wave i:nth-child(2){height:13px}.mini-audio-wave i:nth-child(3){height:9px}.mini-audio-wave i:nth-child(4){height:16px}.mini-audio-wave i:nth-child(5){height:6px}
+.mini-audio-wave.is-playing i{animation:mini-wave .65s ease-in-out infinite alternate}
+.mini-audio-wave.is-playing i:nth-child(2){animation-delay:.1s}.mini-audio-wave.is-playing i:nth-child(3){animation-delay:.22s}.mini-audio-wave.is-playing i:nth-child(4){animation-delay:.32s}.mini-audio-wave.is-playing i:nth-child(5){animation-delay:.16s}
+@keyframes mini-wave{to{transform:scaleY(.35);opacity:.5}}
+.mini-audio input{width:100%;height:4px;appearance:none;border-radius:99px;background:linear-gradient(to right,#d7dfb1 var(--range-fill),#ffffff26 var(--range-fill));cursor:pointer}
+.mini-audio input::-webkit-slider-thumb{appearance:none;width:9px;height:9px;border-radius:50%;background:#f2f3eb}
+.mini-audio-time{font-variant-numeric:tabular-nums;font-size:9px;color:#b9bcae;white-space:nowrap}
+.mini-audio-time i{font-style:normal;color:#777b70;margin:0 2px}
+@media(max-width:760px){.expanded-top{padding:14px 18px}.expanded-content{width:min(540px,86vw);grid-template-columns:1fr;gap:22px;padding:8px 0 24px;align-content:center}.expanded-cover{width:min(68vw,42vh);justify-self:center;border-radius:10px}.expanded-details{width:100%;gap:17px}.expanded-meta{padding-right:48px}.expanded-meta h2{font-size:clamp(24px,7vw,34px);margin:6px 0}.expanded-meta p{font-size:11px}.expanded-actions{top:0}.expanded-actions button{width:38px;height:38px}.expanded-controls{justify-content:center;gap:26px}.expanded-controls .expanded-play{width:54px;height:54px}.expanded-progress>div{font-size:9px}.app-shell{padding-bottom:150px}.topbar{height:66px}.account-actions{gap:8px}.account-actions>a{display:inline-flex}.account-actions .account-library-link,.account-actions .artist-account-link{display:none}.account-signout{font-size:9px}.account-avatar{height:28px;width:28px}.hero{min-height:420px;border-radius:17px}.hero-text{padding:0 22px 25px}.hero h1{font-size:38px}.release-grid{gap:8px}.release-card{padding:7px;border-radius:12px}.artist-grid{gap:8px}.artist-card{padding:7px;border-radius:12px}.now-playing{height:78px;bottom:62px;padding:0 12px;grid-template-columns:minmax(0,1fr) minmax(130px,1.15fr)}.player-extra{display:none}.player-controls{gap:15px}.player-controls button:first-child,.player-controls button:last-child{display:none}.progress-row{gap:6px}.now-cover{width:42px;height:42px}.now-track{gap:8px}.now-track-meta b{max-width:32vw}.account-card{padding:32px 25px;border-radius:19px}.account-brand{margin-bottom:30px}.song-directory article{grid-template-columns:22px 44px minmax(0,1fr);gap:9px}.song-directory article>a:last-child{display:none}.mini-audio{grid-template-columns:30px 24px minmax(45px,1fr) auto;gap:7px;padding:4px 7px}.mini-audio-time{font-size:8px}}
