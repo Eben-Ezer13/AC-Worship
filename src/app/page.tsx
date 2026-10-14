@@ -4,8 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import trackData from "@/data/tracks.json";
-import { getAccountSummary, getFavoriteTrackIds, recordListening, signOut, toggleTrackFavorite } from "@/app/account-actions";
+import { getAccountSummary, getFavoriteTrackIds, recordListening, toggleTrackFavorite } from "@/app/account-actions";
 import { getUnreadNotificationCount } from "@/app/notification-actions";
+import { ProfileMenu } from "@/components/profile-menu";
 
 type Track = { id: string; title: string; artist: string; album: string | null; duration: number; audio: string; cover?: string; status: string; color: string };
 
@@ -55,7 +56,7 @@ export default function Home() {
   const [activeTrack, setActiveTrack] = useState<Track>(tracks[0]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
+  const [duration, setDuration] = useState(tracks[0]?.duration ?? 0);
   const [volume, setVolume] = useState(0.78);
   const [shuffle, setShuffle] = useState(false);
   const [repeat, setRepeat] = useState(false);
@@ -63,7 +64,8 @@ export default function Home() {
   const [liked, setLiked] = useState<string[]>([]);
   const [autoplay, setAutoplay] = useState(false);
   const [expandedPlayer, setExpandedPlayer] = useState(false);
-  const [account, setAccount] = useState<{ name: string; role: string } | null>(null);
+  const [playerError, setPlayerError] = useState<string | null>(null);
+  const [account, setAccount] = useState<{ name: string; email: string; role: string } | null>(null);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const filteredTracks = useMemo(() => tracks.filter((track) => `${track.title} ${track.artist}`.toLowerCase().includes(query.toLowerCase())), [query]);
@@ -86,7 +88,10 @@ export default function Home() {
 
   useEffect(() => {
     if (!autoplay || !audioRef.current) return;
-    void audioRef.current.play().catch(() => setIsPlaying(false));
+    void audioRef.current.play().then(() => setPlayerError(null)).catch(() => {
+      setIsPlaying(false);
+      setPlayerError("Impossible de lire ce chant. Vérifiez que le fichier audio est accessible.");
+    });
     setAutoplay(false);
   }, [activeTrack, autoplay]);
 
@@ -99,14 +104,18 @@ export default function Home() {
     if (isPlaying && currentTime > 3) void recordListening(activeTrack.id, currentTime);
     setActiveTrack(track);
     setCurrentTime(0);
-    setDuration(0);
+    setDuration(track.duration > 0 ? track.duration : 0);
+    setPlayerError(null);
     setIsPlaying(true);
     setAutoplay(true);
   }
 
   function playNext() {
     const currentIndex = tracks.findIndex((track) => track.id === activeTrack.id);
-    const nextIndex = shuffle ? Math.floor(Math.random() * tracks.length) : (currentIndex + 1) % tracks.length;
+    let nextIndex = (currentIndex + 1) % tracks.length;
+    if (shuffle && tracks.length > 1) {
+      do { nextIndex = Math.floor(Math.random() * tracks.length); } while (nextIndex === currentIndex);
+    }
     playTrack(tracks[nextIndex]);
   }
 
@@ -121,8 +130,15 @@ export default function Home() {
 
   function togglePlayback() {
     if (!audioRef.current) return;
-    if (audioRef.current.paused) void audioRef.current.play().catch(() => setIsPlaying(false));
+    if (audioRef.current.paused) void audioRef.current.play().then(() => setPlayerError(null)).catch(() => {
+      setIsPlaying(false);
+      setPlayerError("Impossible de lire ce chant. Vérifiez que le fichier audio est accessible.");
+    });
     else audioRef.current.pause();
+  }
+
+  function mediaDuration(audio: HTMLAudioElement) {
+    return Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : activeTrack.duration;
   }
 
   function toggleLike() {
@@ -160,7 +176,7 @@ export default function Home() {
         <header className="topbar">
           <div className="history-controls"><button aria-label="Page précédente">‹</button><button aria-label="Page suivante">›</button></div>
           <label className="search-box"><Icon name="search" size={18}/><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Artistes, titres, albums…"/><kbd>⌘ K</kbd></label>
-          <div className="account-actions">{account ? <><Link className="account-library-link" href="/library">Ma bibliothèque</Link><Link className="notification-bell" href="/notifications" aria-label={`Notifications${unreadNotifications ? `, ${unreadNotifications} non lues` : ""}`}><Icon name="bell" size={19}/>{unreadNotifications > 0 && <span>{unreadNotifications > 9 ? "9+" : unreadNotifications}</span>}</Link>{account.role === "ARTIST" && <Link className="artist-account-link" href="/artist/dashboard">Mon espace</Link>}<Link className="account-avatar" href="/profile" title={`Profil de ${account.name}`} aria-label="Mon profil">{account.name.slice(0, 1).toUpperCase()}</Link><form action={signOut}><button className="account-signout">Déconnexion</button></form></> : <><a href="/login">Se connecter</a><a className="signup-button" href="/signup">Créer un compte</a></>}</div>
+          <div className="account-actions">{account ? <><Link className="account-library-link" href="/library">Ma bibliothèque</Link><Link className="notification-bell" href="/notifications" aria-label={`Notifications${unreadNotifications ? `, ${unreadNotifications} non lues` : ""}`}><Icon name="bell" size={19}/>{unreadNotifications > 0 && <span>{unreadNotifications > 9 ? "9+" : unreadNotifications}</span>}</Link>{account.role === "ARTIST" && <Link className="artist-account-link" href="/artist/dashboard">Mon espace</Link>}<ProfileMenu name={account.name} email={account.email} role={account.role} unread={unreadNotifications}/></> : <><a href="/login">Se connecter</a><a className="signup-button" href="/signup">Créer un compte</a></>}</div>
         </header>
 
         <div className="content-area">
@@ -202,12 +218,12 @@ export default function Home() {
         <div className="player-center"><div className="player-controls"><button className={shuffle ? "control-active" : ""} aria-label="Lecture aléatoire" aria-pressed={shuffle} onClick={() => setShuffle(!shuffle)}><Icon name="shuffle" size={17}/></button><button aria-label="Titre précédent" onClick={playPrevious}><Icon name="prev" size={18}/></button><button className="main-play" aria-label={isPlaying ? "Mettre en pause" : "Lire"} onClick={togglePlayback}><Icon name={isPlaying ? "pause" : "play"} size={16}/></button><button aria-label="Titre suivant" onClick={playNext}><Icon name="next" size={18}/></button><button className={repeat ? "control-active" : ""} aria-label="Répéter le titre" aria-pressed={repeat} onClick={() => setRepeat(!repeat)}><Icon name="repeat" size={17}/></button></div><div className="progress-row"><span>{formatTime(currentTime)}</span><input aria-label="Position dans le titre" type="range" min="0" max={duration || 1} step="0.1" value={Math.min(currentTime, duration || 1)} style={{ "--range-fill": `${duration ? (currentTime / duration) * 100 : 0}%` } as React.CSSProperties} onChange={(event) => { const nextTime = Number(event.target.value); setCurrentTime(nextTime); if (audioRef.current) audioRef.current.currentTime = nextTime; }}/><span>{formatTime(duration)}</span></div></div>
         <div className="player-extra"><button aria-label="Agrandir le lecteur" onClick={() => setExpandedPlayer(true)}>⤢</button><button aria-label="Afficher la file de lecture" aria-expanded={queueOpen} onClick={() => setQueueOpen(!queueOpen)}><Icon name="library" size={18}/></button><Icon name="volume" size={18}/><input aria-label="Volume" type="range" min="0" max="1" step="0.01" value={volume} style={{ "--range-fill": `${volume * 100}%` } as React.CSSProperties} onChange={(event) => setVolume(Number(event.target.value))}/></div>
       </aside>
-      <audio ref={audioRef} src={activeTrack.audio} preload="metadata" loop={repeat} hidden onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)} onDurationChange={(event) => setDuration(event.currentTarget.duration)} onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} onEnded={playNext}/>
+      <audio ref={audioRef} src={activeTrack.audio} preload="metadata" loop={repeat} hidden onLoadedMetadata={(event) => setDuration(mediaDuration(event.currentTarget))} onDurationChange={(event) => setDuration(mediaDuration(event.currentTarget))} onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)} onPlay={() => { setIsPlaying(true); setPlayerError(null); }} onPause={() => setIsPlaying(false)} onError={() => { setIsPlaying(false); setDuration(activeTrack.duration); setPlayerError("Ce fichier audio est momentanément indisponible."); }} onEnded={playNext}/>
 
       {expandedPlayer && <section className="expanded-player" style={{ "--player-art": `url("${activeTrack.cover ?? "/media/artists/june-grogui.jpg"}")` } as React.CSSProperties} aria-label="Lecteur agrandi">
         <div className="expanded-backdrop"/>
         <header className="expanded-top">
-          <button className="expanded-reduce" onClick={() => setExpandedPlayer(false)} aria-label="Reduire le lecteur">
+          <button className="expanded-reduce" onClick={() => setExpandedPlayer(false)} aria-label="Réduire le lecteur">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
             <span>R&eacute;duire le lecteur</span>
           </button>
@@ -225,10 +241,13 @@ export default function Home() {
                 <input aria-label="Position dans le titre" type="range" min="0" max={duration || 1} step="0.1" value={Math.min(currentTime, duration || 1)} style={{ "--range-fill": `${duration ? (currentTime / duration) * 100 : 0}%` } as React.CSSProperties} onChange={(event) => {const nextTime = Number(event.target.value); setCurrentTime(nextTime); if (audioRef.current) audioRef.current.currentTime = nextTime;}}/>
                 <div><span>{formatTime(currentTime)}</span><span>{formatTime(duration)}</span></div>
               </div>
+              {playerError && <p className="player-error" role="status">{playerError}</p>}
               <div className="expanded-controls">
+                <button className={shuffle ? "control-active" : ""} onClick={() => setShuffle((value) => !value)} aria-label="Lecture aléatoire" aria-pressed={shuffle}><Icon name="shuffle" size={18}/></button>
                 <button onClick={playPrevious} aria-label="Titre precedent"><Icon name="prev" size={22}/></button>
                 <button className="expanded-play" onClick={togglePlayback} aria-label={isPlaying ? "Mettre en pause" : "Lire le titre"}><Icon name={isPlaying ? "pause" : "play"} size={22}/></button>
                 <button onClick={playNext} aria-label="Titre suivant"><Icon name="next" size={22}/></button>
+                <button className={repeat ? "control-active" : ""} onClick={() => setRepeat((value) => !value)} aria-label="Répéter le titre" aria-pressed={repeat}><Icon name="repeat" size={18}/></button>
               </div>
             </div>
             <div className="expanded-actions"><button className={liked.includes(activeTrack.id) ? "is-liked" : ""} onClick={toggleLike} aria-label={liked.includes(activeTrack.id) ? "Retirer des titres favoris" : "Ajouter aux titres favoris"}><Icon name="heart" size={20}/></button></div>

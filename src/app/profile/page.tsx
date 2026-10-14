@@ -10,7 +10,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
   const user = await currentUser();
   if (!user) redirect("/login?next=/profile");
   const { saved, error } = await searchParams;
-  return <main className="catalog-page account-page"><header className="catalog-top"><Link href="/">← AC Worship</Link><Link href="/notifications">Notifications</Link></header>
+  return <main className="catalog-page profile-page"><header className="catalog-top"><Link href="/">← AC Worship</Link><Link href="/notifications">Notifications</Link></header>
     <span className="section-kicker">VOTRE COMPTE</span><h1>Mon profil</h1><p className="catalog-intro">Retrouvez ici vos préférences et votre espace personnel.</p>
     <section className="profile-card"><div className="profile-avatar">{user.name.slice(0, 1).toUpperCase()}</div><div><span className="section-kicker">{user.role === "ARTIST" ? "COMPTE ARTISTE" : "AUDITEUR"}</span><h2>{user.name}</h2><p>{user.email}</p></div></section>
     {saved && <div className="form-notice">Votre profil a été mis à jour.</div>}{error && <div className="form-notice">Le nom doit contenir entre 2 et 80 caractères.</div>}

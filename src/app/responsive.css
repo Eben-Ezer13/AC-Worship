@@ -1,0 +1,308 @@
+/* Shared responsive corrections for the main player and account controls. */
+html,
+body {
+  width: 100%;
+  min-width: 320px;
+  overflow-x: clip;
+}
+
+img,
+svg {
+  max-width: 100%;
+}
+
+.profile-menu {
+  position: relative;
+  z-index: 35;
+  flex: 0 0 auto;
+}
+
+.profile-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 42px;
+  padding: 3px 6px 3px 3px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: #d8dccb;
+  cursor: pointer;
+  transition: background .18s ease, border-color .18s ease;
+}
+
+.profile-menu-trigger:hover,
+.profile-menu-trigger[aria-expanded="true"] {
+  border-color: #ffffff20;
+  background: #ffffff0b;
+}
+
+.profile-menu-avatar {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid #e1e7c35c;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #424b34, #22271d);
+  color: #e8edcf;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.profile-menu-chevron {
+  color: #a8ad9d;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.profile-menu-popover {
+  position: absolute;
+  top: calc(100% + 11px);
+  right: 0;
+  z-index: 100;
+  width: min(340px, calc(100vw - 24px));
+  padding: 10px;
+  overflow: hidden;
+  border: 1px solid #ffffff20;
+  border-radius: 17px;
+  background: linear-gradient(150deg, #20241d, #141612 78%);
+  box-shadow: 0 22px 65px #000b, 0 2px 10px #0005;
+  color: #f1f1e9;
+  animation: profile-menu-in .16s ease-out;
+}
+
+@keyframes profile-menu-in {
+  from { opacity: 0; transform: translateY(-5px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.profile-menu-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 10px 16px;
+  border-bottom: 1px solid #ffffff13;
+}
+
+.profile-menu-heading .profile-menu-avatar {
+  flex-basis: 44px;
+  width: 44px;
+  height: 44px;
+  font-size: 17px;
+}
+
+.profile-menu-heading > span:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.profile-menu-heading b,
+.profile-menu-heading small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-menu-heading b { font-size: 13px; }
+.profile-menu-heading small { color: #a6aa9c; font-size: 10px; }
+.profile-menu-heading i { color: #cbd49f; font-size: 9px; font-style: normal; }
+
+.profile-menu-links {
+  display: grid;
+  gap: 3px;
+  padding: 8px 0;
+}
+
+.profile-menu-links a,
+.profile-menu-popover form button {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 42px;
+  width: 100%;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #e4e5dc;
+  font-size: 11px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.profile-menu-links a:hover,
+.profile-menu-popover form button:hover { background: #ffffff0d; }
+.profile-menu-icon { display: grid; flex: 0 0 24px; width: 24px; height: 20px; place-items: center; color: #cbd49f; font-size: 17px; }
+.profile-menu-arrow { margin-left: auto; color: #777d6e; font-size: 19px; }
+.profile-menu-links em { margin-left: auto; padding: 3px 7px; border-radius: 99px; background: #d5dfad; color: #1c2017; font-size: 9px; font-style: normal; font-weight: 700; }
+.profile-menu-links em + .profile-menu-arrow { margin-left: 0; }
+.profile-menu-popover form { border-top: 1px solid #ffffff13; padding-top: 7px; }
+.profile-menu-popover form button { color: #d0c4bd; }
+.profile-menu-popover form .profile-menu-icon { color: #d0a294; }
+
+.expanded-top {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.expanded-top .expanded-reduce {
+  width: auto;
+  height: auto;
+  min-height: 38px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.expanded-reduce svg {
+  display: block;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  aspect-ratio: 1;
+}
+
+.expanded-top .expanded-reduce span { white-space: nowrap; }
+.expanded-backdrop { filter: blur(54px) saturate(.88) brightness(.62); opacity: .9; }
+
+.catalog-page {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: clamp(18px, 5vw, 80px);
+}
+
+.profile-page,
+.notifications-page,
+.playlist-page,
+.content-detail-page,
+.library-page,
+.dashboard-page {
+  min-height: 100svh;
+}
+
+.profile-card,
+.install-card,
+.profile-options,
+.profile-edit-form,
+.notification-list,
+.playlist-player-card,
+.playlist-track-list,
+.artist-discography,
+.library-section,
+.dashboard-section {
+  min-width: 0;
+}
+
+.artist-directory { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.release-grid,.artist-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+@media (max-width: 1100px) {
+  .topbar { gap: 14px; padding-inline: 24px; }
+  .search-box { width: min(380px, 34vw); }
+  .account-actions { gap: 12px; }
+  .expanded-footer { grid-template-columns: minmax(0, 1fr) minmax(250px, 380px) auto; gap: 22px; }
+  .release-grid,.artist-grid { gap: 14px; }
+}
+
+@media (max-width: 860px) {
+  .sidebar { display: none; }
+  .main-column { margin-left: 0; }
+  .topbar { height: 68px; padding-inline: clamp(14px, 3vw, 28px); }
+  .history-controls { display: none; }
+  .search-box { width: auto; flex: 1 1 auto; max-width: 560px; }
+  .content-area { padding-inline: clamp(16px, 3vw, 30px); }
+  .release-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .artist-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .mobile-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .app-shell { padding-bottom: 150px; }
+  .now-playing { bottom: 62px; }
+  .catalog-top { margin-bottom: clamp(30px, 6vw, 58px); }
+  .expanded-footer { grid-template-columns: minmax(0, 1fr) minmax(230px, 340px) auto; gap: 18px; }
+  .expanded-cover { width: min(50vw, 52vh, 540px); }
+}
+
+@media (max-width: 640px) {
+  .topbar { height: 62px; gap: 9px; padding-inline: 12px; }
+  .search-box { min-width: 0; height: 36px; padding-inline: 9px; gap: 7px; }
+  .search-box input { font-size: 10px; }
+  .account-actions { gap: 8px; }
+  .account-actions .account-library-link,.account-actions .artist-account-link { display: none; }
+  .account-actions > a.notification-bell { display: grid; flex: 0 0 32px; width: 32px; height: 32px; }
+  .account-actions > a:not(.notification-bell) { display: inline-flex; }
+  .account-actions > a.signup-button { display: inline-flex; white-space: nowrap; }
+  .profile-menu-trigger { min-height: 38px; padding-right: 2px; }
+  .profile-menu-trigger .profile-menu-avatar { flex-basis: 32px; width: 32px; height: 32px; }
+  .profile-menu-chevron { display: none; }
+  .profile-menu-popover { position: fixed; top: 58px; right: 10px; width: min(340px, calc(100vw - 20px)); max-height: calc(100svh - 78px); overflow-y: auto; }
+  .expanded-top { position: relative; display: flex; justify-content: space-between; height: 62px; flex-basis: 62px; padding-inline: 14px; }
+  .expanded-top .expanded-reduce { gap: 8px; font-size: 12px; }
+  .expanded-top .expanded-reduce { min-height: 34px; }
+  .expanded-reduce svg { flex-basis: 34px; width: 34px; height: 34px; padding: 8px; }
+  .expanded-top .expanded-status { position: absolute; left: 50%; transform: translateX(-50%); max-width: 30vw; overflow: hidden; font-size: 7px; letter-spacing: .1em; white-space: nowrap; }
+  .expanded-top .expanded-close { flex: 0 0 34px; width: 34px; height: 34px; }
+  .expanded-stage { padding: 6px 16px max(18px, env(safe-area-inset-bottom)); gap: 14px; }
+  .expanded-cover { width: min(76vw, 42svh, 430px); }
+  .expanded-footer { grid-template-columns: minmax(0, 1fr) auto; gap: 13px 10px; align-items: center; }
+  .expanded-meta { grid-column: 1; grid-row: 1; }
+  .expanded-meta h2 { font-size: clamp(19px, 6vw, 28px); }
+  .expanded-actions { grid-column: 2; grid-row: 1; }
+  .expanded-playback { grid-column: 1 / -1; grid-row: 2; }
+  .expanded-controls { justify-content: center; }
+  .expanded-controls { gap: clamp(8px, 3vw, 18px); }
+  .expanded-controls button { width: 36px; height: 40px; }
+  .expanded-controls .expanded-play { flex: 0 0 50px; width: 50px; height: 50px; }
+  .artist-grid,.release-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .catalog-page { padding: 20px 17px max(48px, env(safe-area-inset-bottom)); }
+  .catalog-page h1 { font-size: clamp(34px, 10vw, 54px); overflow-wrap: anywhere; }
+  .catalog-top { margin-bottom: 32px; gap: 12px; }
+  .profile-card { align-items: center; padding: 18px; }
+  .profile-card h2 { overflow-wrap: anywhere; }
+  .profile-edit-form > div { align-items: stretch; flex-direction: column; }
+  .profile-edit-form .secondary-button { width: 100%; }
+  .install-card { padding: 19px; }
+  .playlist-player-card { grid-template-columns: minmax(0, 1fr); }
+  .playlist-feature-art { width: min(72vw, 300px); }
+  .playlist-row { align-items: stretch; flex-direction: column; }
+  .playlist-open-link { width: 100%; }
+  .playlist-row > form { margin: 0; flex-wrap: wrap; }
+  .playlist-row > form select { min-width: 0; flex: 1; }
+  .notification-title { align-items: flex-start; }
+  .notification-title > form,.notification-title > form button { width: 100%; }
+  .notification-item { grid-template-columns: 9px minmax(0, 1fr); padding-inline: 0; }
+  .notification-read { padding: 8px 0; }
+  .detail-image { min-height: 190px; height: 58vw; }
+  .detail-summary { font-size: 16px; }
+  .artist-hero { grid-template-columns: minmax(0, 1fr); }
+  .song-directory article { grid-template-columns: 20px 42px minmax(0, 1fr); }
+  .song-directory article > a:last-child { display: none; }
+  .artist-product { flex-wrap: wrap; }
+  .dashboard-form { width: 100%; }
+  .dashboard-form input,.dashboard-form textarea { min-width: 0; }
+  .app-shell { padding-bottom: calc(146px + env(safe-area-inset-bottom)); }
+  .mobile-nav { height: calc(62px + env(safe-area-inset-bottom)); padding-bottom: max(5px, env(safe-area-inset-bottom)); }
+  .now-playing { bottom: calc(62px + env(safe-area-inset-bottom)); height: 76px; }
+}
+
+@media (max-width: 380px) {
+  .search-box input { font-size: 9px; }
+  .account-actions { gap: 5px; }
+  .expanded-top .expanded-status { display: none; }
+  .hero h1 { font-size: clamp(30px, 9vw, 36px); }
+  .hero-actions { flex-wrap: wrap; }
+  .now-track-meta b,.now-track-meta span { max-width: 29vw; }
+  .player-controls { gap: 7px; }
+}
+
+@media (max-height: 620px) and (min-width: 641px) {
+  .expanded-stage { grid-template-columns: minmax(0, 1fr) minmax(300px, .9fr); grid-template-rows: 1fr; gap: 28px; }
+  .expanded-cover { width: min(44vh, 380px); }
+  .expanded-footer { grid-template-columns: minmax(0, 1fr); align-self: center; }
+  .expanded-actions { position: absolute; top: 0; right: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-menu-popover { animation: none; }
+}

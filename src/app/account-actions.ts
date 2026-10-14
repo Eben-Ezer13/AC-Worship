@@ -36,7 +36,7 @@ export async function getAccountSummary() {
   const { currentUser } = await import("@/lib/auth");
   try {
     const user = await currentUser();
-    return user ? { name: user.name, role: user.role } : null;
+    return user ? { name: user.name, email: user.email, role: user.role } : null;
   } catch {
     return null;
   }

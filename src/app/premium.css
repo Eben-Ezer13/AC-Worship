@@ -152,6 +152,9 @@ body{background:radial-gradient(ellipse at 72% -15%,#28302155,transparent 38%),#
 .expanded-controls{display:flex;justify-content:center;align-items:center;gap:28px}
 .expanded-controls button{width:42px;height:42px;display:grid;place-items:center;border:0;background:transparent;color:#fff;cursor:pointer}
 .expanded-controls .expanded-play{width:54px;height:54px;border-radius:50%;background:#f2efdf;color:#181a14;box-shadow:0 6px 22px #0004}
+.expanded-controls button.control-active{color:#d7dfb1;position:relative}
+.expanded-controls button.control-active:after{content:"";position:absolute;bottom:2px;width:4px;height:4px;border-radius:50%;background:#d7dfb1}
+.player-error{margin:0;color:#ffcbc2;font-size:11px;line-height:1.4}
 .expanded-actions{position:static;justify-self:end;align-self:center}
 .expanded-actions button{width:44px;height:44px;display:grid;place-items:center;border:1px solid #ffffff38;border-radius:50%;background:#0d100d35;color:#fff;cursor:pointer}
 .expanded-actions button.is-liked{color:#ffaaa4;border-color:#ffaaa488;background:#4a1e1e55}
