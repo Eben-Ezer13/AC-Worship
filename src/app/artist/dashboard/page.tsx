@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { ArtistMediaUpload } from "@/components/artist-media-upload";
 import { ReleaseScheduleField } from "@/components/release-schedule-field";
 import { ReleaseCountdown } from "@/components/release-countdown";
+import { DeleteSongForm } from "@/components/delete-song-form";
 import { submitAlbum, submitArtistEvent, submitArtistNews, submitProduct, submitSong, updateArtistAlbum, updateArtistProfile, updateArtistSong } from "@/app/account-actions";
 
 function localDateValue(date: Date | null) {
@@ -14,7 +15,7 @@ function localDateValue(date: Date | null) {
 }
 
 const notices: Record<string, string> = {
-  profile: "Profil mis à jour.", song: "Chant ajouté au catalogue.", "song-updated": "Chant mis à jour.", album: "Album créé. Ajoutez-y des chants depuis le catalogue.", "album-updated": "Album mis à jour.", news: "Actualité publiée.", event: "Événement publié.", product: "Produit publié.",
+  profile: "Profil mis à jour.", song: "Chant ajouté au catalogue.", "song-updated": "Chant mis à jour.", "song-deleted": "Le chant a été retiré de votre catalogue.", album: "Album créé. Ajoutez-y des chants depuis le catalogue.", "album-updated": "Album mis à jour.", news: "Actualité publiée.", event: "Événement publié.", product: "Produit publié.",
 };
 
 const errors: Record<string, string> = {
@@ -100,18 +101,21 @@ export default async function ArtistDashboard({ searchParams }: { searchParams: 
         <div className="song-edit-list">{profile.songLinks.map(({ song }) => {
           const releaseAt = [song.releaseDate, song.album?.releaseDate].filter((date): date is Date => date !== null && date !== undefined).sort((a, b) => b.getTime() - a.getTime())[0] ?? null;
           const isUpcoming = releaseAt !== null && releaseAt > new Date();
-          return <form className="song-editor" action={updateArtistSong} key={song.id}>
-          <input type="hidden" name="songId" value={song.id}/>
-          <div className="song-editor-heading">{song.artworkUrl || song.album?.artworkUrl || profile.imageUrl ? <img src={song.artworkUrl ?? song.album?.artworkUrl ?? profile.imageUrl ?? ""} alt=""/> : <span className="album-editor-placeholder">♫</span>}<div><b>{song.title}</b><small>{song.status === "PUBLISHED" ? (isUpcoming ? `Sortie prévue le ${releaseAt.toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}` : "Publié") : song.status}</small>{isUpcoming && <ReleaseCountdown releaseAt={releaseAt.toISOString()}/>}</div></div>
-          <div className="dashboard-form album-editor-fields">
-            <label>Titre<input name="title" defaultValue={song.title} required/></label>
-            <label>Album<select name="albumId" defaultValue={song.albumId ?? ""}><option value="">Single / sans album</option>{profile.albums.map((album) => <option key={album.id} value={album.id}>{album.title}</option>)}</select></label>
-            <ArtistMediaUpload artistId={profile.id} name="audioUrl" label="Remplacer l’audio" kind="audio" accept="audio/mpeg,audio/mp3,audio/wav,audio/x-wav,audio/flac,audio/aac,audio/mp4,audio/x-m4a" initialUrl={song.audioKey ?? ""}/>
-            <ArtistMediaUpload artistId={profile.id} name="artworkUrl" label="Pochette du chant" kind="image" accept="image/jpeg,image/png,image/webp" initialUrl={song.artworkUrl ?? song.album?.artworkUrl ?? ""}/>
-            <ReleaseScheduleField initialMode={song.releaseDate && song.releaseDate > new Date() ? "scheduled" : "immediate"} initialValue={song.releaseDate && song.releaseDate > new Date() ? localDateValue(song.releaseDate) : ""} />
-          </div>
-          <button className="secondary-button">Enregistrer le chant</button>
-        </form>;
+          return <div className="song-editor-wrap" key={song.id}>
+            <form className="song-editor" action={updateArtistSong}>
+              <input type="hidden" name="songId" value={song.id}/>
+              <div className="song-editor-heading">{song.artworkUrl || song.album?.artworkUrl || profile.imageUrl ? <img src={song.artworkUrl ?? song.album?.artworkUrl ?? profile.imageUrl ?? ""} alt=""/> : <span className="album-editor-placeholder">♫</span>}<div><b>{song.title}</b><small>{song.status === "PUBLISHED" ? (isUpcoming ? `Sortie prévue le ${releaseAt.toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}` : "Publié") : song.status}</small>{isUpcoming && <ReleaseCountdown releaseAt={releaseAt.toISOString()}/>}</div></div>
+              <div className="dashboard-form album-editor-fields">
+                <label>Titre<input name="title" defaultValue={song.title} required/></label>
+                <label>Album<select name="albumId" defaultValue={song.albumId ?? ""}><option value="">Single / sans album</option>{profile.albums.map((album) => <option key={album.id} value={album.id}>{album.title}</option>)}</select></label>
+                <ArtistMediaUpload artistId={profile.id} name="audioUrl" label="Remplacer l’audio" kind="audio" accept="audio/mpeg,audio/mp3,audio/wav,audio/x-wav,audio/flac,audio/aac,audio/mp4,audio/x-m4a" initialUrl={song.audioKey ?? ""}/>
+                <ArtistMediaUpload artistId={profile.id} name="artworkUrl" label="Pochette du chant" kind="image" accept="image/jpeg,image/png,image/webp" initialUrl={song.artworkUrl ?? song.album?.artworkUrl ?? ""}/>
+                <ReleaseScheduleField initialMode={song.releaseDate && song.releaseDate > new Date() ? "scheduled" : "immediate"} initialValue={song.releaseDate && song.releaseDate > new Date() ? localDateValue(song.releaseDate) : ""} />
+              </div>
+              <button className="secondary-button">Enregistrer le chant</button>
+            </form>
+            <DeleteSongForm songId={song.id} title={song.title}/>
+          </div>;
         })}</div>
       </section>
 

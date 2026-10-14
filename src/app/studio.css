@@ -5,6 +5,22 @@
 @media(max-width:760px){.release-subheading{align-items:flex-start;flex-direction:column;gap:4px;margin:17px 0 10px}.release-subheading>span{font-size:8px}.release-subheading>small{font-size:8px}.upcoming-release-grid{grid-template-columns:1fr;gap:8px}.upcoming-release-card{padding:10px;gap:11px}.upcoming-release-art{width:57px;height:57px}.upcoming-release-copy b{font-size:11px}.release-countdown{font-size:9px}.latest-artist-grid{grid-template-columns:1fr;gap:9px}.latest-artist-card{padding:12px}.latest-artist-heading{font-size:11px}.latest-song-art{width:38px;height:38px}}
 @media(max-width:390px){.discovery-grid{grid-template-columns:1fr}.event-art{aspect-ratio:1.7}}
 .library-song-cover{width:48px;height:48px;object-fit:cover;border-radius:5px;flex:none}
+/* Clearer release cards and touch-friendly artist controls on every screen. */
+.release-showcase .section-heading h2{font-size:clamp(26px,3.2vw,40px);line-height:1.12;letter-spacing:-.025em}
+.upcoming-release-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:14px}
+.upcoming-release-card{gap:16px;min-height:112px;padding:16px;border-radius:14px}
+.upcoming-release-art{width:80px;height:80px;border-radius:10px}
+.upcoming-release-copy{gap:8px;padding-right:18px}
+.upcoming-release-copy>span:first-child{font-size:10px;line-height:1.45}
+.upcoming-release-copy b{font-size:clamp(14px,1.15vw,17px);line-height:1.35}
+.release-countdown{font-size:12px;line-height:1.45}
+.song-editor-wrap{max-width:820px;margin:14px 0;padding:14px;border:1px solid #ffffff15;border-radius:14px;background:linear-gradient(145deg,#20211c,#191a16)}
+.song-editor-wrap .song-editor{max-width:none;margin:0;padding:6px;border:0;background:transparent}
+.song-delete-form{display:flex;justify-content:flex-end;padding:0 6px 4px}
+.song-delete-button{min-height:42px;padding:9px 14px;border:1px solid #d8898266;border-radius:8px;background:#572d291c;color:#e9aaa2;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:background .18s,border-color .18s}
+.song-delete-button:hover{border-color:#e89a91;background:#6d373122}
+.song-delete-button:focus-visible{outline:2px solid #e9aaa2;outline-offset:3px}
+@media(max-width:760px){.release-showcase .section-heading h2{font-size:clamp(25px,7vw,32px)}.upcoming-release-grid{grid-template-columns:1fr;gap:10px}.upcoming-release-card{min-height:94px;padding:12px;gap:13px}.upcoming-release-art{width:68px;height:68px}.upcoming-release-copy>span:first-child{font-size:9px}.upcoming-release-copy b{font-size:14px}.release-countdown{font-size:11px}.song-editor-wrap{margin:12px 0;padding:10px;border-radius:12px}.song-delete-form{padding:8px 0 2px}.song-delete-button{width:100%;min-height:44px}}
 /* Legacy iOS Safari (including iPhone 7) does not reliably size images from aspect-ratio. */
 @supports not (aspect-ratio: 1 / 1){
   .release-cover-wrap{position:relative}

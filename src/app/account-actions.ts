@@ -170,6 +170,36 @@ export async function updateArtistSong(formData: FormData) {
   redirect("/artist/dashboard?saved=song-updated");
 }
 
+export async function deleteArtistSong(formData: FormData) {
+  const { currentUser } = await import("@/lib/auth");
+  const user = await currentUser();
+  if (!user || user.role !== "ARTIST") redirect("/login");
+  const membership = await prisma.artistMember.findFirst({ where: { userId: user.id }, select: { artistId: true } });
+  if (!membership) redirect("/artist/dashboard?error=missing-profile");
+  const id = String(formData.get("songId") ?? "");
+  const owned = await prisma.song.findFirst({
+    where: { id, artists: { some: { artistId: membership.artistId } } },
+    select: { id: true, artists: { select: { artistId: true } } },
+  });
+  if (!owned) redirect("/artist/dashboard?error=invalid-song");
+
+  // Retain listening history, favorites and playlist references. Archive a solo
+  // release; for a collaboration, remove only this artist's association.
+  await prisma.$transaction(async (tx) => {
+    await tx.songArtist.delete({ where: { songId_artistId: { songId: id, artistId: membership.artistId } } });
+    if (owned.artists.length === 1) {
+      await tx.song.update({ where: { id }, data: { status: "ARCHIVED" } });
+    }
+  });
+
+  const artist = await prisma.artist.findUniqueOrThrow({ where: { id: membership.artistId }, select: { slug: true } });
+  revalidatePath("/");
+  revalidatePath("/artists");
+  revalidatePath(`/artists/${artist.slug}`);
+  revalidatePath("/artist/dashboard");
+  redirect("/artist/dashboard?saved=song-deleted");
+}
+
 export async function submitAlbum(formData: FormData) {
   const { currentUser } = await import("@/lib/auth");
   const user = await currentUser();
