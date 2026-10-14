@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ArtistMediaUpload } from "@/components/artist-media-upload";
+import { ReleaseScheduleField } from "@/components/release-schedule-field";
+import { ReleaseCountdown } from "@/components/release-countdown";
 import { submitAlbum, submitArtistEvent, submitArtistNews, submitProduct, submitSong, updateArtistAlbum, updateArtistProfile, updateArtistSong } from "@/app/account-actions";
 
 function localDateValue(date: Date | null) {
@@ -16,7 +18,7 @@ const notices: Record<string, string> = {
 };
 
 const errors: Record<string, string> = {
-  "audio-missing": "Le fichier audio local est introuvable.", "invalid-media": "Le fichier envoyé doit provenir du stockage média AC Worship.", "invalid-release-date": "La date de sortie n’est pas valide.", "invalid-album": "Vérifiez le nom de l’album et son type.", "invalid-song": "Vérifiez le titre, le fichier audio et l’autorisation de publication.", "missing-profile": "Aucun profil artiste n’est lié à ce compte.",
+  "audio-missing": "Le fichier audio local est introuvable.", "invalid-media": "Le fichier envoyé doit provenir du stockage média AC Worship.", "invalid-release-date": "La date de sortie n’est pas valide.", "release-date-past": "Choisissez une date et une heure futures, ou sélectionnez la publication immédiate.", "invalid-album": "Vérifiez le nom de l’album et son type.", "invalid-song": "Vérifiez le titre, le fichier audio et l’autorisation de publication.", "missing-profile": "Aucun profil artiste n’est lié à ce compte.",
 };
 
 export default async function ArtistDashboard({ searchParams }: { searchParams: Promise<{ saved?: string; error?: string }> }) {
@@ -53,7 +55,7 @@ export default async function ArtistDashboard({ searchParams }: { searchParams: 
           <label>Nom affiché<input name="name" defaultValue={profile.name} required minLength={2}/></label>
           <label>Biographie<textarea name="bio" defaultValue={profile.bio} rows={5} maxLength={2000}/></label>
           <label>Style musical<input name="genre" defaultValue={profile.genre ?? ""} placeholder="Louange, gospel…"/></label>
-          <ArtistMediaUpload artistId={profile.id} name="imageUrl" label="Photo de profil (JPG, PNG, WebP ou AVIF)" kind="image" accept="image/jpeg,image/png,image/webp,image/avif" initialUrl={profile.imageUrl ?? ""}/>
+          <ArtistMediaUpload artistId={profile.id} name="imageUrl" label="Photo de profil (JPG, PNG ou WebP)" kind="image" accept="image/jpeg,image/png,image/webp" initialUrl={profile.imageUrl ?? ""}/>
           <button className="primary-button">Enregistrer le profil</button>
         </form>
       </section>
@@ -65,7 +67,7 @@ export default async function ArtistDashboard({ searchParams }: { searchParams: 
           <label>Nom de l’album<input name="title" required minLength={2}/></label>
           <label>Format<select name="type" defaultValue="ALBUM"><option value="ALBUM">Album</option><option value="EP">EP</option><option value="SINGLE">Single</option></select></label>
           <label>Description<textarea name="description" rows={3}/></label>
-          <ArtistMediaUpload artistId={profile.id} name="artworkUrl" label="Pochette de l’album (facultatif)" kind="image" accept="image/jpeg,image/png,image/webp,image/avif"/>
+          <ArtistMediaUpload artistId={profile.id} name="artworkUrl" label="Pochette de l’album (facultatif)" kind="image" accept="image/jpeg,image/png,image/webp"/>
           <label>Programmer la sortie (facultatif)<input type="datetime-local" name="releaseDate"/></label>
           <button className="primary-button">Créer l’album</button>
         </form>
@@ -76,7 +78,7 @@ export default async function ArtistDashboard({ searchParams }: { searchParams: 
             <label>Nom<input name="title" defaultValue={album.title} required/></label>
             <label>Format<select name="type" defaultValue={album.type}><option value="ALBUM">Album</option><option value="EP">EP</option><option value="SINGLE">Single</option></select></label>
             <label>Description<textarea name="description" defaultValue={album.description} rows={2}/></label>
-            <ArtistMediaUpload artistId={profile.id} name="artworkUrl" label="Pochette" kind="image" accept="image/jpeg,image/png,image/webp,image/avif" initialUrl={album.artworkUrl ?? ""}/>
+            <ArtistMediaUpload artistId={profile.id} name="artworkUrl" label="Pochette" kind="image" accept="image/jpeg,image/png,image/webp" initialUrl={album.artworkUrl ?? ""}/>
             <label>Date de sortie<input type="datetime-local" name="releaseDate" defaultValue={localDateValue(album.releaseDate)}/></label>
           </div>
           <button className="secondary-button">Enregistrer l’album</button>
@@ -85,28 +87,32 @@ export default async function ArtistDashboard({ searchParams }: { searchParams: 
 
       <section className="dashboard-section">
         <span className="section-kicker">SORTIES · {profile.songLinks.length} CHANTS</span><h2>Publier un nouveau chant</h2>
-        <p className="dashboard-help">Envoyez un fichier MP3, WAV, FLAC ou AAC jusqu’à 200 Mo. Les auditeurs le verront à la date programmée.</p>
+        <p className="dashboard-help">Envoyez un fichier MP3, WAV, FLAC ou AAC jusqu’à 200 Mo. Publiez-le tout de suite ou choisissez une date de sortie.</p>
         <form className="dashboard-form" action={submitSong}>
           <label>Titre du chant<input name="title" required minLength={2}/></label>
           <ArtistMediaUpload artistId={profile.id} name="audioUrl" label="Fichier audio" kind="audio" accept="audio/mpeg,audio/mp3,audio/wav,audio/x-wav,audio/flac,audio/aac,audio/mp4,audio/x-m4a" required/>
-          <ArtistMediaUpload artistId={profile.id} name="artworkUrl" label="Pochette du chant (facultatif — celle de l’album sera utilisée sinon)" kind="image" accept="image/jpeg,image/png,image/webp,image/avif"/>
+          <ArtistMediaUpload artistId={profile.id} name="artworkUrl" label="Pochette du chant (facultatif — celle de l’album sera utilisée sinon)" kind="image" accept="image/jpeg,image/png,image/webp"/>
           <label>Album<select name="albumId" defaultValue=""><option value="">Single / sans album</option>{profile.albums.map((album) => <option key={album.id} value={album.id}>{album.title}</option>)}</select></label>
-          <label>Date et heure de sortie<input type="datetime-local" name="releaseDate"/></label>
+          <ReleaseScheduleField />
           <label className="rights-confirm"><input type="checkbox" name="rightsConfirmed" required/>Je confirme posséder les droits et autorisations nécessaires à cette publication.</label>
           <button className="primary-button">Programmer / publier</button>
         </form>
-        <div className="song-edit-list">{profile.songLinks.map(({ song }) => <form className="song-editor" action={updateArtistSong} key={song.id}>
+        <div className="song-edit-list">{profile.songLinks.map(({ song }) => {
+          const releaseAt = [song.releaseDate, song.album?.releaseDate].filter((date): date is Date => date !== null && date !== undefined).sort((a, b) => b.getTime() - a.getTime())[0] ?? null;
+          const isUpcoming = releaseAt !== null && releaseAt > new Date();
+          return <form className="song-editor" action={updateArtistSong} key={song.id}>
           <input type="hidden" name="songId" value={song.id}/>
-          <div className="song-editor-heading">{song.artworkUrl || song.album?.artworkUrl || profile.imageUrl ? <img src={song.artworkUrl ?? song.album?.artworkUrl ?? profile.imageUrl ?? ""} alt=""/> : <span className="album-editor-placeholder">♫</span>}<div><b>{song.title}</b><small>{song.status === "PUBLISHED" ? (song.releaseDate && song.releaseDate > new Date() ? `Sortie prévue le ${song.releaseDate.toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}` : "Publié") : song.status}</small></div></div>
+          <div className="song-editor-heading">{song.artworkUrl || song.album?.artworkUrl || profile.imageUrl ? <img src={song.artworkUrl ?? song.album?.artworkUrl ?? profile.imageUrl ?? ""} alt=""/> : <span className="album-editor-placeholder">♫</span>}<div><b>{song.title}</b><small>{song.status === "PUBLISHED" ? (isUpcoming ? `Sortie prévue le ${releaseAt.toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}` : "Publié") : song.status}</small>{isUpcoming && <ReleaseCountdown releaseAt={releaseAt.toISOString()}/>}</div></div>
           <div className="dashboard-form album-editor-fields">
             <label>Titre<input name="title" defaultValue={song.title} required/></label>
             <label>Album<select name="albumId" defaultValue={song.albumId ?? ""}><option value="">Single / sans album</option>{profile.albums.map((album) => <option key={album.id} value={album.id}>{album.title}</option>)}</select></label>
             <ArtistMediaUpload artistId={profile.id} name="audioUrl" label="Remplacer l’audio" kind="audio" accept="audio/mpeg,audio/mp3,audio/wav,audio/x-wav,audio/flac,audio/aac,audio/mp4,audio/x-m4a" initialUrl={song.audioKey ?? ""}/>
-            <ArtistMediaUpload artistId={profile.id} name="artworkUrl" label="Pochette du chant" kind="image" accept="image/jpeg,image/png,image/webp,image/avif" initialUrl={song.artworkUrl ?? song.album?.artworkUrl ?? ""}/>
-            <label>Date de sortie<input type="datetime-local" name="releaseDate" defaultValue={localDateValue(song.releaseDate)}/></label>
+            <ArtistMediaUpload artistId={profile.id} name="artworkUrl" label="Pochette du chant" kind="image" accept="image/jpeg,image/png,image/webp" initialUrl={song.artworkUrl ?? song.album?.artworkUrl ?? ""}/>
+            <ReleaseScheduleField initialMode={song.releaseDate && song.releaseDate > new Date() ? "scheduled" : "immediate"} initialValue={song.releaseDate && song.releaseDate > new Date() ? localDateValue(song.releaseDate) : ""} />
           </div>
           <button className="secondary-button">Enregistrer le chant</button>
-        </form>)}</div>
+        </form>;
+        })}</div>
       </section>
 
       <section className="dashboard-section">

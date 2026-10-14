@@ -19,7 +19,7 @@ export async function POST(request: Request) {
         if (!pathname.startsWith(`artists/${membership.artistId}/${kind}/`)) throw new Error("Chemin de téléversement invalide.");
         return {
           allowedContentTypes: kind === "image"
-            ? ["image/jpeg", "image/png", "image/webp", "image/avif"]
+            ? ["image/jpeg", "image/png", "image/webp"]
             : ["audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/flac", "audio/aac", "audio/mp4", "audio/x-m4a"],
           maximumSizeInBytes: kind === "audio" ? 200 * 1024 * 1024 : 12 * 1024 * 1024,
           addRandomSuffix: true,

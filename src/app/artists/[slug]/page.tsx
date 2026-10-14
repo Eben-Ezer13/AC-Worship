@@ -5,6 +5,7 @@ import { artists, tracks } from "@/lib/catalog";
 import { prisma } from "@/lib/prisma";
 import { formatListenerCount, getMonthlyListenerCounts } from "@/lib/audience";
 import { AudioPlayer } from "@/components/audio-player";
+import { ReleaseCountdown } from "@/components/release-countdown";
 export const dynamic = "force-dynamic";
 export function generateStaticParams() { return artists.map(({ slug }) => ({ slug })); }
 
@@ -17,6 +18,7 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
   const fallback = artists.find((candidate) => candidate.slug === slug);
   let artist = fallback;
   let songs = fallback ? tracks.filter((track) => track.artist === fallback.name).map((track) => ({ id: track.id, title: track.title, album: track.album ?? "Single", cover: track.cover ?? fallback.image, audio: track.audio, duration: track.duration })) : [];
+  let upcomingSongs: { id: string; title: string; album: string; cover: string; releaseAt: string }[] = [];
   let products: { id: string; name: string; description: string; priceLabel: string | null }[] = [];
   let monthlyListeners: number | null = null;
   try {
@@ -26,6 +28,14 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
       const knownTitles = new Set(songs.map((song) => normalizedTitle(song.title)));
       const coverFallback = artist?.image ?? fallback?.image ?? "/media/artists/yoann-adopo.jpg";
       const now = new Date();
+      upcomingSongs = record.songLinks
+        .map(({ song }) => {
+          const releaseAt = [song.releaseDate, song.album?.releaseDate].filter((date): date is Date => date !== null && date !== undefined).sort((a, b) => b.getTime() - a.getTime())[0];
+          return releaseAt && releaseAt > now ? { id: song.id, title: song.title, album: song.album?.title ?? "Single", cover: song.artworkUrl ?? song.album?.artworkUrl ?? coverFallback, releaseAt: releaseAt.toISOString() } : null;
+        })
+        .filter((song): song is NonNullable<typeof song> => song !== null)
+        .filter((song) => !knownTitles.has(normalizedTitle(song.title)))
+        .sort((a, b) => Date.parse(a.releaseAt) - Date.parse(b.releaseAt));
       const additionalSongs = record.songLinks
         .filter(({ song }) => (!song.releaseDate || song.releaseDate <= now) && (!song.album?.releaseDate || song.album.releaseDate <= now))
         .map(({ song }) => ({ id: song.slug, title: song.title, album: song.album?.title ?? "Single", cover: song.artworkUrl ?? song.album?.artworkUrl ?? coverFallback, audio: song.audioKey ?? "", duration: 0 }))
@@ -41,5 +51,5 @@ export default async function ArtistPage({ params }: { params: Promise<{ slug: s
     }
   } catch { /* Les profils existants restent disponibles sans base de données */ }
   if (!artist) notFound();
-  return <main className="catalog-page artist-page"><header className="catalog-top"><Link href="/artists">← Tous les artistes</Link><Link href="/library">Ma biblioth&egrave;que</Link></header><section className="artist-hero"><div className="artist-hero-image"><Image src={artist.image} alt={artist.name} fill priority sizes="(max-width:700px) 100vw, 420px"/></div><div><span className="section-kicker">ESPACE ARTISTE · {songs.length} CHANTS</span><h1>{artist.name}</h1><div className="artist-audience"><strong>{formatListenerCount(monthlyListeners)}</strong><span>auditeurs mensuels</span><small>sur les 30 derniers jours</small></div><p>{artist.bio}</p><a className="primary-button" href="#discography">Explorer ses compositions ↓</a></div></section><section id="discography" className="artist-discography"><span className="section-kicker">DISCOGRAPHIE</span><h2>Ses compositions</h2><div className="song-directory">{songs.map((song, i) => <article key={song.id}><span>{String(i + 1).padStart(2, "0")}</span>{song.cover ? <Image src={song.cover} alt={`Pochette de ${song.title}`} width={54} height={54}/> : <div className="song-placeholder">AC</div>}<div><b>{song.title}</b><small>{song.album === "Album à confirmer" ? "Single" : song.album}</small>{song.audio && <AudioPlayer src={song.audio} title={song.title} trackId={song.id} artist={artist.name} album={song.album} cover={song.cover} duration={song.duration}/>}</div><a href={`/?track=${song.id}`} aria-label={`Écouter ${song.title}`}>▶</a></article>)}</div></section>{products.length > 0 && <section id="store" className="artist-discography artist-store"><span className="section-kicker">BOUTIQUE</span><h2>Le store de {artist.name}</h2>{products.map((product) => <article className="artist-product" key={product.id}><div><b>{product.name}</b><p>{product.description}</p></div><span>{product.priceLabel ?? "Contacter l’artiste"}</span></article>)}</section>}<footer className="catalog-footer"><Link href="/">AC WORSHIP</Link></footer></main>;
+  return <main className="catalog-page artist-page"><header className="catalog-top"><Link href="/artists">← Tous les artistes</Link><Link href="/library">Ma biblioth&egrave;que</Link></header><section className="artist-hero"><div className="artist-hero-image"><Image src={artist.image} alt={artist.name} fill priority sizes="(max-width:700px) 100vw, 420px"/></div><div><span className="section-kicker">ESPACE ARTISTE · {songs.length} CHANTS</span><h1>{artist.name}</h1><div className="artist-audience"><strong>{formatListenerCount(monthlyListeners)}</strong><span>auditeurs mensuels</span><small>sur les 30 derniers jours</small></div><p>{artist.bio}</p><a className="primary-button" href="#discography">Explorer ses compositions ↓</a></div></section>{upcomingSongs.length > 0 && <section id="upcoming-releases" className="artist-discography artist-upcoming"><span className="section-kicker">BIENTÔT DISPONIBLE</span><h2>Prochaines sorties</h2><div className="upcoming-release-grid">{upcomingSongs.map((song) => <article className="upcoming-release-card" key={song.id}><div className="upcoming-release-art"><Image src={song.cover} alt={`Pochette de ${song.title}`} fill sizes="(max-width: 760px) 34vw, 150px"/></div><div className="upcoming-release-copy"><span>{song.album}</span><b>{song.title}</b><ReleaseCountdown releaseAt={song.releaseAt} showDate/></div></article>)}</div></section>}<section id="discography" className="artist-discography"><span className="section-kicker">DISCOGRAPHIE</span><h2>Ses compositions</h2><div className="song-directory">{songs.map((song, i) => <article key={song.id}><span>{String(i + 1).padStart(2, "0")}</span>{song.cover ? <Image src={song.cover} alt={`Pochette de ${song.title}`} width={54} height={54}/> : <div className="song-placeholder">AC</div>}<div><b>{song.title}</b><small>{song.album === "Album à confirmer" ? "Single" : song.album}</small>{song.audio && <AudioPlayer src={song.audio} title={song.title} trackId={song.id} artist={artist.name} album={song.album} cover={song.cover} duration={song.duration}/>}</div><a href={`/?track=${song.id}`} aria-label={`Écouter ${song.title}`}>▶</a></article>)}</div></section>{products.length > 0 && <section id="store" className="artist-discography artist-store"><span className="section-kicker">BOUTIQUE</span><h2>Le store de {artist.name}</h2>{products.map((product) => <article className="artist-product" key={product.id}><div><b>{product.name}</b><p>{product.description}</p></div><span>{product.priceLabel ?? "Contacter l’artiste"}</span></article>)}</section>}<footer className="catalog-footer"><Link href="/">AC WORSHIP</Link></footer></main>;
 }

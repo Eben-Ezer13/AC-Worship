@@ -94,6 +94,26 @@ function parseReleaseDate(value: string) {
   return parsed;
 }
 
+function parseSongReleaseDate(formData: FormData) {
+  const mode = String(formData.get("releaseMode") ?? "immediate");
+  if (mode === "immediate") return null;
+  if (mode !== "scheduled") redirect("/artist/dashboard?error=invalid-release-date");
+
+  const value = String(formData.get("releaseDate") ?? "");
+  const offsetValue = String(formData.get("releaseDateOffset") ?? "");
+  const offset = Number(offsetValue);
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value) || !offsetValue || !Number.isInteger(offset) || Math.abs(offset) > 14 * 60) {
+    redirect("/artist/dashboard?error=invalid-release-date");
+  }
+
+  // datetime-local carries no timezone, so apply the browser's offset explicitly.
+  const localAsUtc = new Date(`${value}:00Z`);
+  if (!Number.isFinite(localAsUtc.getTime()) || localAsUtc.toISOString().slice(0, 16) !== value) redirect("/artist/dashboard?error=invalid-release-date");
+  const scheduledAt = new Date(localAsUtc.getTime() + offset * 60_000);
+  if (scheduledAt <= new Date()) redirect("/artist/dashboard?error=release-date-past");
+  return scheduledAt;
+}
+
 export async function submitSong(formData: FormData) {
   const { currentUser } = await import("@/lib/auth");
   const user = await currentUser();
@@ -114,7 +134,7 @@ export async function submitSong(formData: FormData) {
   const albumId = String(formData.get("albumId") ?? "").trim() || null;
   if (albumId && !await prisma.album.findFirst({ where: { id: albumId, artistId: link.artistId }, select: { id: true } })) redirect("/artist/dashboard?error=invalid-album");
   const artworkUrl = validateMediaUrl(String(formData.get("artworkUrl") ?? "").trim(), "image");
-  const releaseDate = parseReleaseDate(String(formData.get("releaseDate") ?? ""));
+  const releaseDate = parseSongReleaseDate(formData);
   const slug = `${title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}-${Date.now().toString(36)}`;
   await prisma.song.create({ data: { title, slug, audioKey, artworkUrl, releaseDate, albumId, rightsConfirmedAt: new Date(), status: "PUBLISHED", artists: { create: { artistId: link.artistId } } } });
   revalidatePath(`/artists/${(await prisma.artist.findUniqueOrThrow({ where: { id: link.artistId }, select: { slug: true } })).slug}`);
@@ -143,7 +163,7 @@ export async function updateArtistSong(formData: FormData) {
     try { await access(audioPath); } catch { redirect("/artist/dashboard?error=audio-missing"); }
   }
   const artworkUrl = validateMediaUrl(String(formData.get("artworkUrl") ?? "").trim(), "image");
-  const releaseDate = parseReleaseDate(String(formData.get("releaseDate") ?? ""));
+  const releaseDate = parseSongReleaseDate(formData);
   await prisma.song.update({ where: { id }, data: { title, albumId, artworkUrl, releaseDate, ...(audioKey ? { audioKey } : {}) } });
   const artist = await prisma.artist.findUniqueOrThrow({ where: { id: membership.artistId }, select: { slug: true } });
   revalidatePath(`/artists/${artist.slug}`);

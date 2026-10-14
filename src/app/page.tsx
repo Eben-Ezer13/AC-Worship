@@ -7,6 +7,7 @@ import trackData from "@/data/tracks.json";
 import { getAccountSummary, getFavoriteTrackIds, recordListening, toggleTrackFavorite } from "@/app/account-actions";
 import { getUnreadNotificationCount } from "@/app/notification-actions";
 import { ProfileMenu } from "@/components/profile-menu";
+import { ReleaseShowcase } from "@/components/release-showcase";
 import { getSharedAudio, getSharedTrack, setSharedTrack } from "@/lib/shared-audio";
 
 type Track = { id: string; title: string; artist: string; album: string | null; duration: number; audio: string; cover?: string; status: string; color: string };
@@ -231,7 +232,7 @@ export default function Home() {
               <div className="hero-actions"><button className="primary-button" onClick={() => playTrack(featuredTracks[0])}><Icon name="play" size={17}/>Écouter maintenant</button><Link className="text-button" href="/artists">Explorer les artistes <Icon name="arrow" size={16}/></Link></div>
               <div className="hero-credit">JUNE GROGUI <span>·</span> OINT POUR DÉLIVRER</div>
             </div>
-            <div className="hero-art-wrap"><Artwork color="cover-clay" mark="OINT" cover="/media/releases/june-oint-pour-delivrer.avif" className="hero-art"/><span className="hero-index">01 — 02</span><span className="hero-side-note">CHANTS DE LOUANGE · ASSEMBLÉE CHRÉTIENNE</span></div>
+            <div className="hero-art-wrap"><Artwork color="cover-clay" mark="OINT" cover="/media/releases/june-oint-pour-delivrer.jpg" className="hero-art"/><span className="hero-index">01 — 02</span><span className="hero-side-note">CHANTS DE LOUANGE · ASSEMBLÉE CHRÉTIENNE</span></div>
           </section>
 
           <section className="section-block" id="releases">
@@ -245,6 +246,8 @@ export default function Home() {
             <div className="section-heading"><div><div className="section-kicker">CATALOGUE EN REVUE</div><h2>Quelques chants reçus</h2></div><a href="#music" className="see-all">4 titres présentés</a></div>
             <div className="track-list">{(query ? filteredTracks : tracks.slice(0, 3)).map((track, index) => <button key={track.id} className={`track-row ${activeTrack.id === track.id ? "track-active" : ""}`} onClick={() => playTrack(track)}><span className="track-number">{activeTrack.id === track.id && isPlaying ? <span className="playing-bars"><i/><i/><i/></span> : String(index + 1).padStart(2, "0")}</span><Artwork color={track.color} mark="AC" cover={track.cover} className="track-thumb"/><span className="track-info"><b>{track.title}</b><small>{track.artist}</small></span><span className="track-album">{activeTrack.id === track.id && duration ? formatTime(duration) : "Audio"}</span><span className="track-duration"><Icon name={activeTrack.id === track.id && isPlaying ? "pause" : "play"} size={16}/></span></button>)}</div>
           </section>
+
+          <ReleaseShowcase />
 
           <section className="section-block artist-section" id="artists">
             <div className="section-heading"><div><div className="section-kicker">LES VOIX DE L’AC</div><h2>Artistes à découvrir</h2></div><span className="catalogue-count">2 profils reçus</span></div>
