@@ -1,21 +1,57 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { getSharedAudio, getSharedTrack, setSharedTrack } from "@/lib/shared-audio";
 
 function timeLabel(value: number) {
   if (!Number.isFinite(value)) return "0:00";
   return `${Math.floor(value / 60)}:${Math.floor(value % 60).toString().padStart(2, "0")}`;
 }
 
-export function AudioPlayer({ src, title }: { src: string; title: string }) {
-  const audioRef = useRef<HTMLAudioElement>(null);
+export function AudioPlayer({ src, title, trackId, artist, album, cover, duration: trackDuration = 0 }: { src: string; title: string; trackId: string; artist: string; album: string | null; cover: string | null; duration?: number }) {
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  function togglePlayback() {
-    const audio = audioRef.current;
+  useEffect(() => {
+    const audio = getSharedAudio();
     if (!audio) return;
+    const update = () => {
+      const active = getSharedTrack(audio);
+      const selected = active?.id === trackId;
+      setPlaying(selected && !audio.paused);
+      if (selected) {
+        setCurrentTime(audio.currentTime || 0);
+        setDuration(Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : trackDuration);
+      } else {
+        setCurrentTime(0);
+        setDuration(0);
+      }
+    };
+    audio.addEventListener("timeupdate", update);
+    audio.addEventListener("loadedmetadata", update);
+    audio.addEventListener("durationchange", update);
+    audio.addEventListener("play", update);
+    audio.addEventListener("pause", update);
+    audio.addEventListener("ended", update);
+    update();
+    return () => {
+      audio.removeEventListener("timeupdate", update);
+      audio.removeEventListener("loadedmetadata", update);
+      audio.removeEventListener("durationchange", update);
+      audio.removeEventListener("play", update);
+      audio.removeEventListener("pause", update);
+      audio.removeEventListener("ended", update);
+    };
+  }, [trackId, trackDuration]);
+
+  function togglePlayback() {
+    const audio = getSharedAudio();
+    if (!audio) return;
+    if (getSharedTrack(audio)?.id !== trackId) {
+      setSharedTrack({ id: trackId, title, artist, album, duration: trackDuration, audio: src, cover }, audio);
+      setCurrentTime(0);
+    }
     if (audio.paused) void audio.play().catch(() => setPlaying(false));
     else audio.pause();
   }
@@ -37,21 +73,11 @@ export function AudioPlayer({ src, title }: { src: string; title: string }) {
         onChange={(event) => {
           const next = Number(event.target.value);
           setCurrentTime(next);
-          if (audioRef.current) audioRef.current.currentTime = next;
+          const audio = getSharedAudio();
+          if (audio && getSharedTrack(audio)?.id === trackId) audio.currentTime = next;
         }}
       />
       <span className="mini-audio-time">{timeLabel(currentTime)} <i>/</i> {timeLabel(duration)}</span>
-      <audio
-        ref={audioRef}
-        src={src}
-        preload="none"
-        onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
-        onDurationChange={(event) => setDuration(event.currentTarget.duration)}
-        onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-        onEnded={() => setPlaying(false)}
-      />
     </div>
   );
 }

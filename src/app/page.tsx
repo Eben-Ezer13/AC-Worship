@@ -7,6 +7,7 @@ import trackData from "@/data/tracks.json";
 import { getAccountSummary, getFavoriteTrackIds, recordListening, toggleTrackFavorite } from "@/app/account-actions";
 import { getUnreadNotificationCount } from "@/app/notification-actions";
 import { ProfileMenu } from "@/components/profile-menu";
+import { getSharedAudio, getSharedTrack, setSharedTrack } from "@/lib/shared-audio";
 
 type Track = { id: string; title: string; artist: string; album: string | null; duration: number; audio: string; cover?: string; status: string; color: string };
 
@@ -68,16 +69,51 @@ export default function Home() {
   const [account, setAccount] = useState<{ name: string; email: string; role: string } | null>(null);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const playNextRef = useRef<() => void>(() => {});
   const filteredTracks = useMemo(() => tracks.filter((track) => `${track.title} ${track.artist}`.toLowerCase().includes(query.toLowerCase())), [query]);
 
   useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = volume;
+    const audio = getSharedAudio();
+    if (audio) audio.volume = volume;
   }, [volume]);
 
   useEffect(() => {
     const requestedTrack = new URLSearchParams(window.location.search).get("track");
     const match = tracks.find((track) => track.id === requestedTrack);
-    if (match) { setActiveTrack(match); setAutoplay(true); }
+    if (match) { setSharedTrack(match); setActiveTrack(match); setAutoplay(true); }
+  }, []);
+
+  useEffect(() => {
+    const audio = getSharedAudio();
+    if (!audio) return;
+    audioRef.current = audio;
+    const syncTrack = () => {
+      const metadata = getSharedTrack(audio);
+      if (metadata) {
+        const known = tracks.find((track) => track.id === metadata.id);
+        setActiveTrack(known ?? { ...metadata, cover: metadata.cover ?? undefined, status: "PUBLISHED", color: palette[0] });
+        setDuration(Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : metadata.duration);
+      }
+      setCurrentTime(audio.currentTime || 0);
+      setIsPlaying(!audio.paused);
+    };
+    const onError = () => { setIsPlaying(false); setPlayerError("Ce fichier audio est momentanément indisponible."); };
+    audio.addEventListener("loadedmetadata", syncTrack);
+    audio.addEventListener("durationchange", syncTrack);
+    audio.addEventListener("timeupdate", syncTrack);
+    audio.addEventListener("play", syncTrack);
+    audio.addEventListener("pause", syncTrack);
+    audio.addEventListener("error", onError);
+    syncTrack();
+    return () => {
+      audio.removeEventListener("loadedmetadata", syncTrack);
+      audio.removeEventListener("durationchange", syncTrack);
+      audio.removeEventListener("timeupdate", syncTrack);
+      audio.removeEventListener("play", syncTrack);
+      audio.removeEventListener("pause", syncTrack);
+      audio.removeEventListener("error", onError);
+      audioRef.current = null;
+    };
   }, []);
 
   useEffect(() => {
@@ -96,6 +132,8 @@ export default function Home() {
   }, [activeTrack, autoplay]);
 
   function playTrack(track: Track) {
+    const audio = getSharedAudio();
+    if (audio) setSharedTrack(track, audio);
     if (track.id === activeTrack.id) {
       if (audioRef.current?.paused) void audioRef.current.play().catch(() => setIsPlaying(false));
       else audioRef.current?.pause();
@@ -118,6 +156,7 @@ export default function Home() {
     }
     playTrack(tracks[nextIndex]);
   }
+  playNextRef.current = playNext;
 
   function playPrevious() {
     if (currentTime > 3 && audioRef.current) {
@@ -128,6 +167,15 @@ export default function Home() {
     playTrack(tracks[(currentIndex + tracks.length - 1) % tracks.length]);
   }
 
+  useEffect(() => {
+    const audio = getSharedAudio();
+    if (!audio) return;
+    audio.loop = repeat;
+    const onEnded = () => playNextRef.current();
+    audio.addEventListener("ended", onEnded);
+    return () => audio.removeEventListener("ended", onEnded);
+  }, [repeat]);
+
   function togglePlayback() {
     if (!audioRef.current) return;
     if (audioRef.current.paused) void audioRef.current.play().then(() => setPlayerError(null)).catch(() => {
@@ -135,10 +183,6 @@ export default function Home() {
       setPlayerError("Impossible de lire ce chant. Vérifiez que le fichier audio est accessible.");
     });
     else audioRef.current.pause();
-  }
-
-  function mediaDuration(audio: HTMLAudioElement) {
-    return Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : activeTrack.duration;
   }
 
   function toggleLike() {
@@ -204,7 +248,7 @@ export default function Home() {
 
           <section className="section-block artist-section" id="artists">
             <div className="section-heading"><div><div className="section-kicker">LES VOIX DE L’AC</div><h2>Artistes à découvrir</h2></div><span className="catalogue-count">2 profils reçus</span></div>
-            <div className="artist-grid">{artists.map((artist) => <a className="artist-card" key={artist.name} href={`/artists/${artist.name.toLowerCase().replaceAll(" ", "-")}`}><div className={`artist-portrait ${artist.color}`}><Image src={artist.image} alt={`Portrait de ${artist.name}`} fill sizes="(max-width: 760px) 45vw, 220px"/><i className="portrait-ring"/></div><b>{artist.name}</b><small>{artist.role}</small><p>{artist.bio}</p><span className="artist-open">Voir ses chants →</span></a>)}</div>
+            <div className="artist-grid">{artists.map((artist) => <Link className="artist-card" key={artist.name} href={`/artists/${artist.name.toLowerCase().replaceAll(" ", "-")}`}><div className={`artist-portrait ${artist.color}`}><Image src={artist.image} alt={`Portrait de ${artist.name}`} fill sizes="(max-width: 760px) 45vw, 220px"/><i className="portrait-ring"/></div><b>{artist.name}</b><small>{artist.role}</small><p>{artist.bio}</p><span className="artist-open">Voir ses chants →</span></Link>)}</div>
           </section>
 
           <section className="editorial-strip" id="events"><div><div className="section-kicker">RENDEZ-VOUS</div><h2>La musique se vit<br/>aussi ensemble.</h2><p>Concerts, rencontres et temps forts de la communauté.</p></div><Link className="editorial-link" href="/notifications">Découvrir les événements <Icon name="arrow" size={16}/></Link><div className="editorial-number">AC <span>·</span> ENSEMBLE</div></section>
@@ -218,8 +262,6 @@ export default function Home() {
         <div className="player-center"><div className="player-controls"><button className={shuffle ? "control-active" : ""} aria-label="Lecture aléatoire" aria-pressed={shuffle} onClick={() => setShuffle(!shuffle)}><Icon name="shuffle" size={17}/></button><button aria-label="Titre précédent" onClick={playPrevious}><Icon name="prev" size={18}/></button><button className="main-play" aria-label={isPlaying ? "Mettre en pause" : "Lire"} onClick={togglePlayback}><Icon name={isPlaying ? "pause" : "play"} size={16}/></button><button aria-label="Titre suivant" onClick={playNext}><Icon name="next" size={18}/></button><button className={repeat ? "control-active" : ""} aria-label="Répéter le titre" aria-pressed={repeat} onClick={() => setRepeat(!repeat)}><Icon name="repeat" size={17}/></button></div><div className="progress-row"><span>{formatTime(currentTime)}</span><input aria-label="Position dans le titre" type="range" min="0" max={duration || 1} step="0.1" value={Math.min(currentTime, duration || 1)} style={{ "--range-fill": `${duration ? (currentTime / duration) * 100 : 0}%` } as React.CSSProperties} onChange={(event) => { const nextTime = Number(event.target.value); setCurrentTime(nextTime); if (audioRef.current) audioRef.current.currentTime = nextTime; }}/><span>{formatTime(duration)}</span></div></div>
         <div className="player-extra"><button aria-label="Agrandir le lecteur" onClick={() => setExpandedPlayer(true)}>⤢</button><button aria-label="Afficher la file de lecture" aria-expanded={queueOpen} onClick={() => setQueueOpen(!queueOpen)}><Icon name="library" size={18}/></button><Icon name="volume" size={18}/><input aria-label="Volume" type="range" min="0" max="1" step="0.01" value={volume} style={{ "--range-fill": `${volume * 100}%` } as React.CSSProperties} onChange={(event) => setVolume(Number(event.target.value))}/></div>
       </aside>
-      <audio ref={audioRef} src={activeTrack.audio} preload="metadata" loop={repeat} hidden onLoadedMetadata={(event) => setDuration(mediaDuration(event.currentTarget))} onDurationChange={(event) => setDuration(mediaDuration(event.currentTarget))} onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)} onPlay={() => { setIsPlaying(true); setPlayerError(null); }} onPause={() => setIsPlaying(false)} onError={() => { setIsPlaying(false); setDuration(activeTrack.duration); setPlayerError("Ce fichier audio est momentanément indisponible."); }} onEnded={playNext}/>
-
       {expandedPlayer && <section className="expanded-player" style={{ "--player-art": `url("${activeTrack.cover ?? "/media/artists/june-grogui.jpg"}")` } as React.CSSProperties} aria-label="Lecteur agrandi">
         <div className="expanded-backdrop"/>
         <header className="expanded-top">
