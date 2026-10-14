@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { signUp } from "@/app/account-actions";
+import { PasswordInput } from "@/components/password-input";
 
 export default async function Signup({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
@@ -15,7 +16,7 @@ export default async function Signup({ searchParams }: { searchParams: Promise<{
         <form action={signUp}>
           <label>Nom complet<input name="name" autoComplete="name" minLength={2} required /></label>
           <label>Adresse e-mail<input name="email" type="email" autoComplete="email" required /></label>
-          <label>Mot de passe<input name="password" type="password" autoComplete="new-password" minLength={10} required /></label>
+          <label>Mot de passe<PasswordInput name="password" autoComplete="new-password" minLength={10} /></label>
           <button className="primary-button">Cr&eacute;er mon espace</button>
         </form>
         <div className="account-switch">D&eacute;j&agrave; inscrit ? <Link href="/login">Se connecter</Link></div>
