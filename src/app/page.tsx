@@ -161,8 +161,8 @@ export default function Home() {
           <a className="nav-item" href="#explore"><Icon name="search"/>Explorer</a>
           <a className="nav-item" href="#releases"><span className="nav-music">♫</span>Musique</a>
           <Link className="nav-item" href="/artists"><span className="nav-artists">◉</span>Artistes</Link>
-          <a className="nav-item" href="#events"><Icon name="calendar"/>Événements</a>
-          <a className="nav-item" href="#store"><Icon name="bag"/>Store</a>
+          <Link className="nav-item" href="/notifications"><Icon name="calendar"/>Événements</Link>
+          <Link className="nav-item" href="/artists"><Icon name="bag"/>Store artiste</Link>
         </nav>
         <div className="side-rule"/>
         <div className="side-label library-heading">VOTRE ESPACE <button aria-label="Créer une playlist">+</button></div>
@@ -207,7 +207,7 @@ export default function Home() {
             <div className="artist-grid">{artists.map((artist) => <a className="artist-card" key={artist.name} href={`/artists/${artist.name.toLowerCase().replaceAll(" ", "-")}`}><div className={`artist-portrait ${artist.color}`}><Image src={artist.image} alt={`Portrait de ${artist.name}`} fill sizes="(max-width: 760px) 45vw, 220px"/><i className="portrait-ring"/></div><b>{artist.name}</b><small>{artist.role}</small><p>{artist.bio}</p><span className="artist-open">Voir ses chants →</span></a>)}</div>
           </section>
 
-          <section className="editorial-strip" id="events"><div><div className="section-kicker">RENDEZ-VOUS</div><h2>La musique se vit<br/>aussi ensemble.</h2><p>Concerts, rencontres et temps forts de la communauté.</p></div><a className="editorial-link" href="#events-list">Découvrir les événements <Icon name="arrow" size={16}/></a><div className="editorial-number">AC <span>·</span> ENSEMBLE</div></section>
+          <section className="editorial-strip" id="events"><div><div className="section-kicker">RENDEZ-VOUS</div><h2>La musique se vit<br/>aussi ensemble.</h2><p>Concerts, rencontres et temps forts de la communauté.</p></div><Link className="editorial-link" href="/notifications">Découvrir les événements <Icon name="arrow" size={16}/></Link><div className="editorial-number">AC <span>·</span> ENSEMBLE</div></section>
           <footer className="footer"><a className="footer-brand" href="#home">AC WORSHIP</a><span>La musique de l’Assemblée Chrétienne</span><div><a href="#about">À propos</a><a href="#contact">Contact</a></div></footer>
         </div>
       </section>
@@ -255,7 +255,17 @@ export default function Home() {
         </div>
       </section>}
 
-      <nav className="mobile-nav" aria-label="Navigation mobile"><a className="mobile-selected" href="#home"><Icon name="home" size={20}/><span>Accueil</span></a><Link href="/artists"><Icon name="search" size={20}/><span>Artistes</span></Link><Link href="/library"><Icon name="library" size={20}/><span>Bibliothèque</span></Link>{account?.role === "ARTIST" && <Link href="/artist/dashboard"><Icon name="calendar" size={20}/><span>Mon espace</span></Link>}</nav>
+      <nav className="mobile-nav" aria-label="Navigation mobile">
+        <a className="mobile-selected" href="#home"><Icon name="home" size={20}/><span>Accueil</span></a>
+        <Link href="/artists"><Icon name="search" size={20}/><span>Artistes</span></Link>
+        <Link href="/library"><Icon name="library" size={20}/><span>Bibliothèque</span></Link>
+        <Link href="/library#playlists"><span className="mobile-nav-icon" aria-hidden="true">♫</span><span>Playlists</span></Link>
+        <Link href="/notifications"><Icon name="calendar" size={20}/><span>Événements</span></Link>
+        <Link href="/artists"><Icon name="bag" size={20}/><span>Store</span></Link>
+        <Link href="/notifications"><span className="mobile-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></span><span>Notifications</span></Link>
+        <Link href={account ? "/profile" : "/login"}><span className="mobile-nav-icon mobile-profile-icon" aria-hidden="true">{account ? account.name.slice(0, 1).toUpperCase() : <svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg>}</span><span>Profil</span></Link>
+        {account?.role === "ARTIST" && <Link href="/artist/dashboard"><Icon name="calendar" size={20}/><span>Espace artiste</span></Link>}
+      </nav>
     </main>
   );
 }
