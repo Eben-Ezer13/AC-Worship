@@ -3,8 +3,8 @@
 import { prisma } from "@/lib/prisma";
 
 export type ReleaseShowcaseData = {
-  upcoming: Array<{ id: string; title: string; artistName: string; artistSlug: string; artworkUrl: string | null; releaseAt: string }>;
-  latestByArtist: Array<{ artistName: string; artistSlug: string; songs: Array<{ id: string; title: string; artworkUrl: string | null; releaseAt: string }> }>;
+  upcoming: Array<{ id: string; title: string; artistName: string; artistSlug: string; artworkUrl: string | null; artistImageUrl: string | null; releaseAt: string }>;
+  latestByArtist: Array<{ artistName: string; artistSlug: string; artistImageUrl: string | null; songs: Array<{ id: string; title: string; artworkUrl: string | null; releaseAt: string }> }>;
 };
 
 export async function getReleaseShowcase(): Promise<ReleaseShowcaseData> {
@@ -49,6 +49,7 @@ export async function getReleaseShowcase(): Promise<ReleaseShowcaseData> {
           title: song.title,
           artistName: artist.name,
           artistSlug: artist.slug,
+          artistImageUrl: artist.imageUrl,
           artworkUrl: song.artworkUrl ?? song.album?.artworkUrl ?? artist.imageUrl,
           releaseAt: releaseAt.toISOString(),
         };
@@ -61,7 +62,7 @@ export async function getReleaseShowcase(): Promise<ReleaseShowcaseData> {
       }
 
       released.sort((a, b) => Date.parse(b.releaseAt) - Date.parse(a.releaseAt));
-      if (released.length) latestByArtist.push({ artistName: artist.name, artistSlug: artist.slug, songs: released.slice(0, 3) });
+      if (released.length) latestByArtist.push({ artistName: artist.name, artistSlug: artist.slug, artistImageUrl: artist.imageUrl, songs: released.slice(0, 3) });
     }
 
     const upcoming = [...upcomingBySong.values()].sort((a, b) => Date.parse(a.releaseAt) - Date.parse(b.releaseAt)).slice(0, 6);

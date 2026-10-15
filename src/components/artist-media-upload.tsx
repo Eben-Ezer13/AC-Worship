@@ -5,6 +5,7 @@ import { useState } from "react";
 
 export function ArtistMediaUpload({ artistId, name, label, kind, accept, initialUrl = "", required = false }: { artistId: string; name: string; label: string; kind: "audio" | "image"; accept: string; initialUrl?: string; required?: boolean }) {
   const [url, setUrl] = useState(initialUrl);
+  const [selectedFileName, setSelectedFileName] = useState("");
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -25,6 +26,7 @@ export function ArtistMediaUpload({ artistId, name, label, kind, accept, initial
         multipart: kind === "audio",
       });
       setUrl(blob.url);
+      setSelectedFileName(file.name);
       setStatus("Fichier prêt. Enregistrez le formulaire pour publier les changements.");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Échec de l’envoi. Vérifiez le stockage média configuré.");
@@ -33,10 +35,14 @@ export function ArtistMediaUpload({ artistId, name, label, kind, accept, initial
     }
   }
 
-  return <span className="artist-upload-field">
+  return <div className="artist-upload-field">
     <label>{label}<input type="file" accept={accept} required={required && !url} disabled={busy} onChange={(event) => void uploadFile(event.currentTarget.files?.[0])}/></label>
     <input type="hidden" name={name} value={url}/>
     {status && <small role="status" className={busy ? "upload-status is-uploading" : "upload-status"}>{status}</small>}
+    {url && <div className={`artist-media-preview artist-media-preview-${kind}`}>
+      {kind === "image" ? <img src={url} alt="Aperçu de l’image envoyée"/> : <div className="artist-audio-preview"><span>ÉCOUTER L’APERÇU</span><audio controls preload="metadata" src={url}>La lecture audio n’est pas prise en charge par ce navigateur.</audio></div>}
+      <small>{selectedFileName || "Fichier prêt à publier"}</small>
+    </div>}
     {url && <small className="upload-status">Fichier sélectionné · <button type="button" onClick={() => { setUrl(""); setStatus("Sélectionnez un nouveau fichier avant d’enregistrer."); }}>Remplacer</button></small>}
-  </span>;
+  </div>;
 }

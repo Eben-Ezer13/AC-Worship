@@ -315,6 +315,21 @@ svg {
   .profile-menu-popover { animation: none; }
 }
 
+/* Mobile Safari: keep text sizing stable and make horizontal controls easy to swipe. */
+html { -webkit-text-size-adjust: 100%; }
+a,button,input,select,textarea { -webkit-tap-highlight-color: transparent; }
+.studio-jump-nav,.mobile-nav { -webkit-overflow-scrolling: touch; }
+
+@media (hover: none) and (pointer: coarse) {
+  .card-play { opacity: 1; transform: none; }
+  .release-card:hover .artwork,.artist-card:hover .artist-portrait { filter: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,*::before,*::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
 /* Mobile playback and navigation: keep artwork crisp and every destination reachable. */
 .artwork > img.cover-image {
   position: absolute !important;
