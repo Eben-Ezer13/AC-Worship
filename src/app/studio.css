@@ -94,6 +94,46 @@
 .artist-audio-preview audio { display: block; width: min(100%, 420px); height: 40px; }
 .artist-media-preview-audio { grid-template-columns: minmax(0, 1fr); }
 
+.content-edit-list { display: grid; gap: 12px; max-width: 820px; margin: 22px 0; }
+.content-editor-card { min-width: 0; overflow: hidden; border: 1px solid #ffffff15; border-radius: 15px; background: linear-gradient(145deg, #20221c, #161713); box-shadow: 0 10px 26px #0002; }
+.content-editor-summary { display: flex; align-items: center; gap: 13px; min-height: 82px; padding: 12px 15px; cursor: pointer; list-style: none; }
+.content-editor-summary::-webkit-details-marker { display: none; }
+.content-editor-summary > img,.content-editor-placeholder { display: grid; width: 58px; height: 58px; flex: 0 0 58px; place-items: center; object-fit: cover; border-radius: 10px; background: radial-gradient(circle at 70% 20%, #68704f, #292e25 75%); color: #dce3bd; font-size: 19px; }
+.content-editor-summary > span:nth-child(2) { display: grid; flex: 1; gap: 6px; min-width: 0; }
+.content-editor-summary b,.content-editor-summary small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.content-editor-summary b { font-size: 13px; }
+.content-editor-summary small { color: #9fa294; font-size: 10px; }
+.content-editor-summary i { color: #cbd39e; font-size: 19px; font-style: normal; transition: transform .18s ease; }
+.content-editor-card[open] .content-editor-summary i { transform: rotate(180deg); }
+.content-editor-summary:focus-visible { outline: 2px solid #d0d9a8; outline-offset: -3px; }
+.content-editor-form { max-width: none; margin: 0; padding: 16px; border-top: 1px solid #ffffff12; }
+.content-editor-form .secondary-button { min-height: 44px; justify-content: center; border: 1px solid #cbd39e66; background: #cbd39e12; color: #e0e5cb; cursor: pointer; }
+.content-editor-card .song-delete-form { margin: 0; padding: 8px 16px 16px; }
+.content-editor-card .song-delete-button { width: 100%; }
+.dashboard-form label small { color: #929588; font-size: 10px; line-height: 1.45; }
+
+.store-buy-link { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 46px; margin-top: 15px; padding: 0 15px; border: 1px solid #d1d9aa55; border-radius: 10px; background: linear-gradient(110deg, #d1d9aa, #b9c58a); color: #1d2117; font-size: 11px; font-weight: 700; transition: filter .18s ease, transform .18s ease; }
+.store-buy-link:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.store-buy-link span { font-size: 15px; }
+.store-contact-link { border-color: #ffffff20; background: #ffffff0a; color: #e0e4d1; }
+
+@media(max-width:760px) {
+  .content-edit-list { gap: 10px; margin: 17px 0; }
+  .content-editor-card { border-radius: 13px; }
+  .content-editor-summary { min-height: 74px; gap: 10px; padding: 9px; }
+  .content-editor-summary > img,.content-editor-placeholder { width: 50px; height: 50px; flex-basis: 50px; border-radius: 8px; }
+  .content-editor-summary b { font-size: 12px; }
+  .content-editor-form { padding: 12px 10px; }
+  .content-editor-card .song-delete-form { padding: 8px 10px 12px; }
+  .store-buy-link { min-height: 48px; width: 100%; }
+}
+
+@media(max-width:380px) {
+  .content-editor-summary { gap: 8px; padding-inline: 7px; }
+  .content-editor-summary > img,.content-editor-placeholder { width: 44px; height: 44px; flex-basis: 44px; }
+  .content-editor-summary small { font-size: 9px; }
+}
+
 /* Artist studio: at-a-glance status, quick navigation and compact edit panels. */
 .studio-overview {
   display: grid;

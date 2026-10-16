@@ -280,6 +280,7 @@ model Product {
   description String              @default("")
   imageUrl    String?
   priceLabel  String?
+  whatsappPhone String?
   availability ProductAvailability @default(CONTACT_ARTIST)
   externalUrl String?
   status      PublicationStatus   @default(DRAFT)

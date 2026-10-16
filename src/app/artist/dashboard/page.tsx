@@ -6,7 +6,8 @@ import { ArtistMediaUpload } from "@/components/artist-media-upload";
 import { ReleaseScheduleField } from "@/components/release-schedule-field";
 import { ReleaseCountdown } from "@/components/release-countdown";
 import { DeleteSongForm } from "@/components/delete-song-form";
-import { submitAlbum, submitArtistEvent, submitArtistNews, submitProduct, submitSong, updateArtistAlbum, updateArtistProfile, updateArtistSong } from "@/app/account-actions";
+import { submitAlbum, submitArtistEvent, submitArtistNews, submitProduct, submitSong, updateArtistAlbum, updateArtistEvent, updateArtistNews, updateArtistProduct, updateArtistProfile, updateArtistSong } from "@/app/account-actions";
+import { DeleteArtistContentForm } from "@/components/delete-artist-content-form";
 
 function localDateValue(date: Date | null) {
   if (!date) return "";
@@ -22,6 +23,19 @@ function songReleaseDate(song: { releaseDate: Date | null; album: { releaseDate:
 
 const notices: Record<string, string> = {
   profile: "Profil mis à jour.", song: "Chant ajouté au catalogue.", "song-updated": "Chant mis à jour.", "song-deleted": "Le chant a été retiré de votre catalogue.", album: "Album créé. Ajoutez-y des chants depuis le catalogue.", "album-updated": "Album mis à jour.", news: "Actualité publiée.", event: "Événement publié.", product: "Produit publié.",
+};
+
+const contentNotices: Record<string, string> = {
+  "product-updated": "Article mis à jour.", "product-deleted": "Article supprimé.",
+  "event-updated": "Évènement mis à jour.", "event-deleted": "Évènement supprimé.",
+  "news-updated": "Actualité mise à jour.", "news-deleted": "Actualité supprimée.",
+};
+
+const contentErrors: Record<string, string> = {
+  "invalid-whatsapp": "Saisissez un numéro WhatsApp international valide, avec l’indicatif pays.",
+  "invalid-product": "Vérifiez le nom de l’article.",
+  "invalid-news": "Vérifiez le titre et le texte de l’actualité.",
+  "invalid-event": "Vérifiez le titre, la description, la date et le lien de l’évènement.",
 };
 
 const errors: Record<string, string> = {
@@ -74,7 +88,8 @@ export default async function ArtistDashboard({ searchParams }: { searchParams: 
     </>}
     {!ready && <div className="form-notice">La base de données est inaccessible. Configurez DATABASE_URL.</div>}
     {saved && notices[saved] && <div className="form-notice">{notices[saved]}</div>}
-    {error && <div className="form-notice">{errors[error] ?? "Vérifiez les informations saisies et réessayez."}</div>}
+    {saved && contentNotices[saved] && <div className="form-notice">{contentNotices[saved]}</div>}
+    {error && <div className="form-notice">{contentErrors[error] ?? errors[error] ?? "Vérifiez les informations saisies et réessayez."}</div>}
     {!blobConfigured && <div className="form-notice upload-setup-note">Le stockage audio et image doit être connecté dans Vercel Storage → Blob, puis synchronisé dans les variables d’environnement du projet.</div>}
     {profile && <>
       <section className="dashboard-section" id="studio-profile">
@@ -160,16 +175,69 @@ export default async function ArtistDashboard({ searchParams }: { searchParams: 
 
       <section className="dashboard-section" id="studio-store">
         <span className="section-kicker">BOUTIQUE · {profile.products.length} PRODUITS</span><h2>Mettre à jour le store</h2>
-        <form className="dashboard-form" action={submitProduct}><label>Nom du produit<input name="name" required/></label><label>Description<textarea name="description" rows={3}/></label><label>Prix affiché<input name="price" placeholder="Ex. 15 € · contacter l’artiste"/></label><button className="primary-button">Publier le produit</button></form>
-        {profile.products.map((product) => <div className="submission-row" key={product.id}>{product.name}<span>{product.status === "PENDING_REVIEW" ? "En attente de validation" : product.status}</span></div>)}
+        <form className="dashboard-form" action={submitProduct}>
+          <label>Nom de l’article<input name="name" required minLength={2}/></label>
+          <label>Description<textarea name="description" rows={3}/></label>
+          <ArtistMediaUpload artistId={profile.id} name="imageUrl" label="Images de l’article (facultatif)" kind="image" accept="image/jpeg,image/png,image/webp"/>
+          <label>Prix affiché<input name="price" placeholder="Ex. 15 €"/></label>
+          <label>Numéro WhatsApp<input name="whatsappPhone" type="tel" inputMode="tel" autoComplete="tel" placeholder="Ex. +225 07 00 00 00 00"/><small>Indicatif international requis. Le client pourra commander directement par WhatsApp.</small></label>
+          <button className="primary-button">Publier l’article</button>
+        </form>
+        <div className="content-edit-list">{profile.products.map((product) => <details className="content-editor-card" key={product.id}>
+          <summary className="content-editor-summary">{product.imageUrl ? <img src={product.imageUrl} alt="" width={56} height={56}/> : <span className="content-editor-placeholder">◇</span>}<span><b>{product.name}</b><small>{product.priceLabel ?? "Prix à confirmer"} · {product.status === "PUBLISHED" ? "Publié" : product.status}</small></span><i aria-hidden="true">⌄</i></summary>
+          <form className="dashboard-form content-editor-form" action={updateArtistProduct}>
+            <input type="hidden" name="productId" value={product.id}/>
+            <label>Nom de l’article<input name="name" defaultValue={product.name} required minLength={2}/></label>
+            <label>Description<textarea name="description" defaultValue={product.description} rows={3}/></label>
+            <ArtistMediaUpload artistId={profile.id} name="imageUrl" label="Image de l’article" kind="image" accept="image/jpeg,image/png,image/webp" initialUrl={product.imageUrl ?? ""}/>
+            <label>Prix affiché<input name="price" defaultValue={product.priceLabel ?? ""} placeholder="Ex. 15 €"/></label>
+            <label>Numéro WhatsApp<input name="whatsappPhone" type="tel" inputMode="tel" autoComplete="tel" defaultValue={product.whatsappPhone ?? ""} placeholder="+225 07 00 00 00 00"/></label>
+            <button className="secondary-button">Enregistrer les modifications</button>
+          </form>
+          <DeleteArtistContentForm kind="product" id={product.id} title={product.name}/>
+        </details>)}</div>
       </section>
       <section className="dashboard-section" id="studio-news">
         <span className="section-kicker">ACTUALITÉS · {profile.articles.length}</span><h2>Partager une actualité</h2>
-        <form className="dashboard-form" action={submitArtistNews}><label>Titre<input name="title" required minLength={3}/></label><label>Résumé<textarea name="summary" rows={2}/></label><label>Texte<textarea name="body" rows={5} required minLength={10}/></label><label>Image (URL ou chemin)<input name="imageUrl" placeholder="/media/..."/></label><button className="primary-button">Publier l’actualité</button></form>
+        <form className="dashboard-form" action={submitArtistNews}>
+          <label>Titre<input name="title" required minLength={3}/></label><label>Résumé<textarea name="summary" rows={2}/></label><label>Texte<textarea name="body" rows={5} required minLength={10}/></label>
+          <ArtistMediaUpload artistId={profile.id} name="imageUrl" label="Image de l’actualité (facultative)" kind="image" accept="image/jpeg,image/png,image/webp"/>
+          <button className="primary-button">Publier l’actualité</button>
+        </form>
+        <div className="content-edit-list">{profile.articles.map((article) => <details className="content-editor-card" key={article.id}>
+          <summary className="content-editor-summary">{article.imageUrl ? <img src={article.imageUrl} alt="" width={56} height={56}/> : <span className="content-editor-placeholder">✦</span>}<span><b>{article.title}</b><small>{(article.publishedAt ?? article.createdAt).toLocaleDateString("fr-FR")} · {article.status === "PUBLISHED" ? "Publié" : article.status}</small></span><i aria-hidden="true">⌄</i></summary>
+          <form className="dashboard-form content-editor-form" action={updateArtistNews}>
+            <input type="hidden" name="articleId" value={article.id}/>
+            <label>Titre<input name="title" defaultValue={article.title} required minLength={3}/></label>
+            <label>Résumé<textarea name="summary" defaultValue={article.summary} rows={2}/></label>
+            <label>Texte<textarea name="body" defaultValue={article.body} rows={5} required minLength={10}/></label>
+            <ArtistMediaUpload artistId={profile.id} name="imageUrl" label="Image de l’actualité (facultative)" kind="image" accept="image/jpeg,image/png,image/webp" initialUrl={article.imageUrl ?? ""}/>
+            <button className="secondary-button">Enregistrer les modifications</button>
+          </form>
+          <DeleteArtistContentForm kind="news" id={article.id} title={article.title}/>
+        </details>)}</div>
       </section>
       <section className="dashboard-section" id="studio-events">
         <span className="section-kicker">ÉVÉNEMENTS · {profile.events.length}</span><h2>Annoncer un événement</h2>
-        <form className="dashboard-form" action={submitArtistEvent}><label>Nom de l’événement<input name="title" required minLength={3}/></label><label>Description<textarea name="description" rows={4} required minLength={10}/></label><label>Date et heure<input type="datetime-local" name="startsAt" required/></label><label>Lieu<input name="venue"/></label><label>Lien d’inscription<input type="url" name="registrationUrl"/></label><button className="primary-button">Publier l’événement</button></form>
+        <form className="dashboard-form" action={submitArtistEvent}>
+          <label>Nom de l’événement<input name="title" required minLength={3}/></label><label>Description<textarea name="description" rows={4} required minLength={10}/></label>
+          <ArtistMediaUpload artistId={profile.id} name="imageUrl" label="Affiche ou image de l’évènement (facultative)" kind="image" accept="image/jpeg,image/png,image/webp"/>
+          <label>Date et heure<input type="datetime-local" name="startsAt" required/></label><label>Lieu<input name="venue"/></label><label>Lien d’inscription<input type="url" name="registrationUrl" placeholder="https://…"/></label><button className="primary-button">Publier l’évènement</button>
+        </form>
+        <div className="content-edit-list">{profile.events.map(({ event }) => <details className="content-editor-card" key={event.id}>
+          <summary className="content-editor-summary">{event.imageUrl ? <img src={event.imageUrl} alt="" width={56} height={56}/> : <span className="content-editor-placeholder">◷</span>}<span><b>{event.title}</b><small>{event.startsAt.toLocaleDateString("fr-FR", { dateStyle: "medium" })} · {event.status === "PUBLISHED" ? "Publié" : event.status}</small></span><i aria-hidden="true">⌄</i></summary>
+          <form className="dashboard-form content-editor-form" action={updateArtistEvent}>
+            <input type="hidden" name="eventId" value={event.id}/>
+            <label>Nom de l’évènement<input name="title" defaultValue={event.title} required minLength={3}/></label>
+            <label>Description<textarea name="description" defaultValue={event.description} rows={4} required minLength={10}/></label>
+            <ArtistMediaUpload artistId={profile.id} name="imageUrl" label="Image de l’évènement" kind="image" accept="image/jpeg,image/png,image/webp" initialUrl={event.imageUrl ?? ""}/>
+            <label>Date et heure<input type="datetime-local" name="startsAt" defaultValue={localDateValue(event.startsAt)} required/></label>
+            <label>Lieu<input name="venue" defaultValue={event.venue ?? ""}/></label>
+            <label>Lien d’inscription<input type="url" name="registrationUrl" defaultValue={event.registrationUrl ?? ""} placeholder="https://…"/></label>
+            <button className="secondary-button">Enregistrer les modifications</button>
+          </form>
+          <DeleteArtistContentForm kind="event" id={event.id} title={event.title}/>
+        </details>)}</div>
       </section>
     </>}
   </main>;
