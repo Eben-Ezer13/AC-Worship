@@ -27,17 +27,18 @@ export const metadata: Metadata = {
     description: "Découvrez les artistes, écoutez les chants et retrouvez les nouvelles sorties sur AC Worship.",
     url: "/",
     images: [{
-      url: "/opengraph-image",
-      width: 1200,
-      height: 630,
-      alt: "AC Worship — La musique qui nous rassemble",
+      url: "/icons/ac-worship-512.png",
+      width: 512,
+      height: 512,
+      type: "image/png",
+      alt: "Logo AC Worship",
     }],
   },
   twitter: {
     card: "summary_large_image",
     title: "AC Worship — La musique qui nous rassemble",
     description: "Découvrez les artistes, écoutez les chants et retrouvez les nouvelles sorties sur AC Worship.",
-    images: ["/opengraph-image"],
+    images: ["/icons/ac-worship-512.png"],
   },
 };
 
