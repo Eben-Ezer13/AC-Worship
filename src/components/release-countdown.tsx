@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function ReleaseCountdown({ releaseAt, onElapsed, showDate = false }: { releaseAt: string; onElapsed?: () => void; showDate?: boolean }) {
+export function ReleaseCountdown({ releaseAt, onElapsed, showDate = false, dateLabel = "Sortie le", readyLabel = "Disponible maintenant" }: { releaseAt: string; onElapsed?: () => void; showDate?: boolean; dateLabel?: string; readyLabel?: string }) {
   const [remaining, setRemaining] = useState<number | null>(null);
   const [localDate, setLocalDate] = useState<string | null>(null);
   const elapsedNotified = useRef(false);
@@ -28,7 +28,7 @@ export function ReleaseCountdown({ releaseAt, onElapsed, showDate = false }: { r
   }, [handleElapsed, releaseAt, showDate]);
 
   if (remaining === null) return <span className="release-countdown" aria-live="polite">Calcul du compte à rebours…</span>;
-  if (remaining === 0) return <span className="release-countdown release-countdown-ready" aria-live="polite">Disponible maintenant</span>;
+  if (remaining === 0) return <span className="release-countdown release-countdown-ready" aria-live="polite">{showDate && localDate ? `${dateLabel} ${localDate} · ` : ""}{readyLabel}</span>;
 
   const totalSeconds = Math.floor(remaining / 1000);
   const days = Math.floor(totalSeconds / 86400);
@@ -39,5 +39,5 @@ export function ReleaseCountdown({ releaseAt, onElapsed, showDate = false }: { r
     ? `${days} j ${String(hours).padStart(2, "0")} h ${String(minutes).padStart(2, "0")} min ${String(seconds).padStart(2, "0")} s`
     : `${String(hours).padStart(2, "0")} h ${String(minutes).padStart(2, "0")} min ${String(seconds).padStart(2, "0")} s`;
 
-  return <span className="release-countdown" aria-live="off">{showDate && localDate ? `Sortie le ${localDate} · ` : ""}{label}</span>;
+  return <span className="release-countdown" aria-live="off">{showDate && localDate ? `${dateLabel} ${localDate} · ` : ""}{label}</span>;
 }

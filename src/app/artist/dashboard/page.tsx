@@ -8,6 +8,7 @@ import { ReleaseCountdown } from "@/components/release-countdown";
 import { DeleteSongForm } from "@/components/delete-song-form";
 import { submitAlbum, submitArtistEvent, submitArtistNews, submitProduct, submitSong, updateArtistAlbum, updateArtistEvent, updateArtistNews, updateArtistProduct, updateArtistProfile, updateArtistSong } from "@/app/account-actions";
 import { DeleteArtistContentForm } from "@/components/delete-artist-content-form";
+import { EventDateTimeField } from "@/components/event-date-time-field";
 
 function localDateValue(date: Date | null) {
   if (!date) return "";
@@ -35,7 +36,8 @@ const contentErrors: Record<string, string> = {
   "invalid-whatsapp": "Saisissez un numéro WhatsApp international valide, avec l’indicatif pays.",
   "invalid-product": "Vérifiez le nom de l’article.",
   "invalid-news": "Vérifiez le titre et le texte de l’actualité.",
-  "invalid-event": "Vérifiez le titre, la description, la date et le lien de l’évènement.",
+  "invalid-event": "Vérifiez le titre, la description, la date, l’heure et le lien de l’évènement.",
+  "event-date-past": "Choisissez une date et une heure futures pour l’évènement.",
 };
 
 const errors: Record<string, string> = {
@@ -222,7 +224,7 @@ export default async function ArtistDashboard({ searchParams }: { searchParams: 
         <form className="dashboard-form" action={submitArtistEvent}>
           <label>Nom de l’événement<input name="title" required minLength={3}/></label><label>Description<textarea name="description" rows={4} required minLength={10}/></label>
           <ArtistMediaUpload artistId={profile.id} name="imageUrl" label="Affiche ou image de l’évènement (facultative)" kind="image" accept="image/jpeg,image/png,image/webp"/>
-          <label>Date et heure<input type="datetime-local" name="startsAt" required/></label><label>Lieu<input name="venue"/></label><label>Lien d’inscription<input type="url" name="registrationUrl" placeholder="https://…"/></label><button className="primary-button">Publier l’évènement</button>
+          <EventDateTimeField/><label>Lieu<input name="venue" placeholder="Salle, ville…"/></label><label>Lien d’inscription<input type="url" name="registrationUrl" placeholder="https://…"/></label><button className="primary-button">Publier l’évènement</button>
         </form>
         <div className="content-edit-list">{profile.events.map(({ event }) => <details className="content-editor-card" key={event.id}>
           <summary className="content-editor-summary">{event.imageUrl ? <img src={event.imageUrl} alt="" width={56} height={56}/> : <span className="content-editor-placeholder">◷</span>}<span><b>{event.title}</b><small>{event.startsAt.toLocaleDateString("fr-FR", { dateStyle: "medium" })} · {event.status === "PUBLISHED" ? "Publié" : event.status}</small></span><i aria-hidden="true">⌄</i></summary>
@@ -231,7 +233,7 @@ export default async function ArtistDashboard({ searchParams }: { searchParams: 
             <label>Nom de l’évènement<input name="title" defaultValue={event.title} required minLength={3}/></label>
             <label>Description<textarea name="description" defaultValue={event.description} rows={4} required minLength={10}/></label>
             <ArtistMediaUpload artistId={profile.id} name="imageUrl" label="Image de l’évènement" kind="image" accept="image/jpeg,image/png,image/webp" initialUrl={event.imageUrl ?? ""}/>
-            <label>Date et heure<input type="datetime-local" name="startsAt" defaultValue={localDateValue(event.startsAt)} required/></label>
+            <EventDateTimeField initialValue={event.startsAt.toISOString()} allowPast={event.startsAt <= new Date()}/>
             <label>Lieu<input name="venue" defaultValue={event.venue ?? ""}/></label>
             <label>Lien d’inscription<input type="url" name="registrationUrl" defaultValue={event.registrationUrl ?? ""} placeholder="https://…"/></label>
             <button className="secondary-button">Enregistrer les modifications</button>

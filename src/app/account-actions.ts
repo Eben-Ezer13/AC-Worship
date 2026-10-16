@@ -302,6 +302,20 @@ function parseOptionalHttpsUrl(value: string, error = "invalid-event") {
   redirect(`/artist/dashboard?error=${error}`);
 }
 
+function parseEventStart(formData: FormData, allowPast = false) {
+  const value = String(formData.get("startsAt") ?? "");
+  const offsetValue = String(formData.get("startsAtOffset") ?? "");
+  const offset = Number(offsetValue);
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value) || !offsetValue || !Number.isInteger(offset) || Math.abs(offset) > 14 * 60) {
+    redirect("/artist/dashboard?error=invalid-event");
+  }
+  const localAsUtc = new Date(`${value}:00Z`);
+  if (!Number.isFinite(localAsUtc.getTime()) || localAsUtc.toISOString().slice(0, 16) !== value) redirect("/artist/dashboard?error=invalid-event");
+  const startsAt = new Date(localAsUtc.getTime() + offset * 60_000);
+  if (!allowPast && startsAt <= new Date()) redirect("/artist/dashboard?error=event-date-past");
+  return startsAt;
+}
+
 export async function updateArtistProduct(formData: FormData) {
   const artistId = await requireArtistId();
   const id = String(formData.get("productId") ?? "");
@@ -379,13 +393,14 @@ export async function submitArtistEvent(formData: FormData) {
   if (!membership) redirect("/artist/dashboard?error=missing-profile");
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
-  const startsAt = new Date(String(formData.get("startsAt") ?? ""));
-  if (title.length < 3 || description.length < 10 || !Number.isFinite(startsAt.getTime())) redirect("/artist/dashboard?error=invalid-event");
+  const startsAt = parseEventStart(formData);
+  if (title.length < 3 || description.length < 10) redirect("/artist/dashboard?error=invalid-event");
   const venue = String(formData.get("venue") ?? "").trim();
   const imageUrl = validateMediaUrl(String(formData.get("imageUrl") ?? "").trim(), "image");
   const registrationUrl = parseOptionalHttpsUrl(String(formData.get("registrationUrl") ?? ""));
   const event = await prisma.event.create({ data: { title, slug: makeSlug(title), description, imageUrl, startsAt, venue: venue || null, registrationUrl, status: "PUBLISHED", artists: { create: { artistId: membership.artistId } } } });
   revalidatePath("/events");
+  revalidatePath("/notifications");
   revalidatePath("/artist/dashboard");
   redirect(`/artist/dashboard?saved=event&event=${event.slug}`);
 }
@@ -393,14 +408,15 @@ export async function submitArtistEvent(formData: FormData) {
 export async function updateArtistEvent(formData: FormData) {
   const artistId = await requireArtistId();
   const id = String(formData.get("eventId") ?? "");
-  const event = await prisma.event.findFirst({ where: { id, artists: { some: { artistId } } }, select: { id: true, slug: true } });
+  const event = await prisma.event.findFirst({ where: { id, artists: { some: { artistId } } }, select: { id: true, slug: true, startsAt: true } });
   if (!event) redirect("/artist/dashboard?error=invalid-event");
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
-  const startsAt = new Date(String(formData.get("startsAt") ?? ""));
-  if (title.length < 3 || description.length < 10 || !Number.isFinite(startsAt.getTime())) redirect("/artist/dashboard?error=invalid-event");
+  const startsAt = parseEventStart(formData, event.startsAt <= new Date());
+  if (title.length < 3 || description.length < 10) redirect("/artist/dashboard?error=invalid-event");
   await prisma.event.update({ where: { id }, data: { title, description, startsAt, venue: String(formData.get("venue") ?? "").trim() || null, registrationUrl: parseOptionalHttpsUrl(String(formData.get("registrationUrl") ?? "")), imageUrl: validateMediaUrl(String(formData.get("imageUrl") ?? "").trim(), "image") } });
   revalidatePath("/events");
+  revalidatePath("/notifications");
   revalidatePath(`/events/${event.slug}`);
   revalidatePath("/artist/dashboard");
   redirect("/artist/dashboard?saved=event-updated");
