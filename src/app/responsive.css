@@ -244,7 +244,7 @@ svg {
   .expanded-top .expanded-status { position: absolute; left: 50%; transform: translateX(-50%); max-width: 30vw; overflow: hidden; font-size: 7px; letter-spacing: .1em; white-space: nowrap; }
   .expanded-top .expanded-close { flex: 0 0 34px; width: 34px; height: 34px; }
   .expanded-stage { padding: 6px 16px max(18px, env(safe-area-inset-bottom)); gap: 14px; }
-  .expanded-cover { width: min(76vw, 42svh, 430px); }
+  .expanded-cover { width: min(76vw, 38vh, 380px); max-height: min(38vh, calc(100vh - 330px)); }
   .expanded-footer { grid-template-columns: minmax(0, 1fr) auto; gap: 13px 10px; align-items: center; }
   .expanded-meta { grid-column: 1; grid-row: 1; }
   .expanded-meta h2 { font-size: clamp(19px, 6vw, 28px); }
@@ -306,7 +306,7 @@ svg {
 
 @media (max-height: 620px) and (min-width: 641px) {
   .expanded-stage { grid-template-columns: minmax(0, 1fr) minmax(300px, .9fr); grid-template-rows: 1fr; gap: 28px; }
-  .expanded-cover { width: min(44vh, 380px); }
+  .expanded-cover { width: min(42vh, 340px); max-height: min(42vh, calc(100vh - 300px)); }
   .expanded-footer { grid-template-columns: minmax(0, 1fr); align-self: center; }
   .expanded-actions { position: absolute; top: 0; right: 0; }
 }

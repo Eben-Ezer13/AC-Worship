@@ -25,7 +25,6 @@ export const metadata: Metadata = {
     siteName: "AC Worship",
     title: "AC Worship — La musique qui nous rassemble",
     description: "Découvrez les artistes, écoutez les chants et retrouvez les nouvelles sorties sur AC Worship.",
-    url: "/",
     images: [{
       url: "/icons/ac-worship-512.png",
       width: 512,
