@@ -268,5 +268,85 @@
     "audio": "/audio/worship-time-medley-le-seul-a-combler-toi-seul-combles-ebloui-june-grogui.mp3",
     "cover": "/media/releases/june-worship-time-medley.jpg",
     "status": "PUBLISHED"
+  },
+  {
+    "id": "chantal-cofie-agama-esprit-remplis-ma-bouche",
+    "title": "Esprit, remplis ma bouche",
+    "artist": "Chantal Cofie-Agama",
+    "album": null,
+    "duration": 0,
+    "audio": "/audio/chantal-cofie-agama/esprit-remplis-ma-bouche.mp3",
+    "cover": "/media/releases/chantal-cofie-agama/esprit-remplis-ma-bouche.jpg",
+    "status": "PUBLISHED"
+  },
+  {
+    "id": "chantal-cofie-agama-gloire",
+    "title": "Gloire",
+    "artist": "Chantal Cofie-Agama",
+    "album": null,
+    "duration": 0,
+    "audio": "/audio/chantal-cofie-agama/gloire.mp3",
+    "cover": "/media/releases/chantal-cofie-agama/gloire.jpg",
+    "status": "PUBLISHED"
+  },
+  {
+    "id": "chantal-cofie-agama-tu-es-toujours-la",
+    "title": "Tu es toujours là",
+    "artist": "Chantal Cofie-Agama",
+    "album": null,
+    "duration": 0,
+    "audio": "/audio/chantal-cofie-agama/tu-es-toujours-la.mp3",
+    "cover": "/media/releases/chantal-cofie-agama/tu-es-toujours-la.jpg",
+    "status": "PUBLISHED"
+  },
+  {
+    "id": "chantal-cofie-agama-une-chose-nouvelle",
+    "title": "Une chose nouvelle",
+    "artist": "Chantal Cofie-Agama",
+    "album": null,
+    "duration": 0,
+    "audio": "/audio/chantal-cofie-agama/une-chose-nouvelle.mp3",
+    "cover": "/media/releases/chantal-cofie-agama/une-chose-nouvelle.jpg",
+    "status": "PUBLISHED"
+  },
+  {
+    "id": "chantal-cofie-agama-we-need-you-lord",
+    "title": "We need you Lord",
+    "artist": "Chantal Cofie-Agama",
+    "album": null,
+    "duration": 0,
+    "audio": "/audio/chantal-cofie-agama/we-need-you-lord.mp3",
+    "cover": "/media/releases/chantal-cofie-agama/we-need-you-lord.jpg",
+    "status": "PUBLISHED"
+  },
+  {
+    "id": "chris-grace-avec-moi",
+    "title": "Avec Moi",
+    "artist": "Chris & Grâce",
+    "album": null,
+    "duration": 0,
+    "audio": "/audio/chris-grace/avec-moi.mp3",
+    "cover": "/media/releases/chris-grace/avec-moi.jpg",
+    "status": "PUBLISHED"
+  },
+  {
+    "id": "chris-grace-liberte",
+    "title": "Liberté",
+    "artist": "Chris & Grâce",
+    "album": null,
+    "duration": 0,
+    "audio": "/audio/chris-grace/liberte.mp3",
+    "cover": "/media/releases/chris-grace/liberte.jpg",
+    "status": "PUBLISHED"
+  },
+  {
+    "id": "chris-grace-saint-esprit",
+    "title": "Saint-Esprit",
+    "artist": "Chris & Grâce",
+    "album": null,
+    "duration": 0,
+    "audio": "/audio/chris-grace/saint-esprit.mp3",
+    "cover": "/media/releases/chris-grace/saint-esprit.jpg",
+    "status": "PUBLISHED"
   }
 ]

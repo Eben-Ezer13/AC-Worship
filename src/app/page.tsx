@@ -21,8 +21,10 @@ const featuredTracks = [
 ].filter((track): track is Track => Boolean(track));
 
 const artists = [
-  { name: "June Grogui", role: "Artiste · Assemblée Chrétienne", bio: "Que les cœurs se tournent vers le Créateur au travers de la louange.", color: "portrait-two", image: "/media/artists/june-grogui.jpg" },
-  { name: "Yoann Adopo", role: "Conducteur de louange", bio: "Il partage des chants auto-composés ou interprétés pour célébrer Jésus et édifier l’Église.", color: "portrait-one", image: "/media/artists/yoann-adopo.jpg" },
+  { name: "Chantal Cofie-Agama", slug: "chantal-cofie-agama", role: "Artiste · Gospel", bio: "Chantal aspire à voir Christ redonner de l’éclat et restaurer les vies brisées. Les vies peuvent être transformées grâce à la puissance de la Parole de Dieu !", color: "portrait-two", image: "/media/artists/chantal-cofie-agama.jpg" },
+  { name: "Chris & Grâce", slug: "chris-grace", role: "Duo · Gospel", bio: "Duo de louange chrétienne, Chris & Grâce partagent des chants de foi et d’adoration.", color: "portrait-two", image: "/media/artists/chris-grace.jpg" },
+  { name: "June Grogui", slug: "june-grogui", role: "Artiste · Assemblée Chrétienne", bio: "Que les cœurs se tournent vers le Créateur au travers de la louange.", color: "portrait-two", image: "/media/artists/june-grogui.jpg" },
+  { name: "Yoann Adopo", slug: "yoann-adopo", role: "Conducteur de louange", bio: "Il partage des chants auto-composés ou interprétés pour célébrer Jésus et édifier l’Église.", color: "portrait-one", image: "/media/artists/yoann-adopo.jpg" },
 ];
 
 function Icon({ name, size = 20 }: { name: string; size?: number }) {
@@ -268,7 +270,7 @@ export default function Home() {
 
           <section className="section-block artist-section" id="artists">
             <div className="section-heading"><div><div className="section-kicker">LES VOIX DE L’AC</div><h2>Artistes à découvrir</h2></div><span className="catalogue-count">2 profils reçus</span></div>
-            <div className="artist-grid">{artists.map((artist) => <Link className="artist-card" key={artist.name} href={`/artists/${artist.name.toLowerCase().replaceAll(" ", "-")}`}><div className={`artist-portrait ${artist.color}`}><img src={artist.image} alt={`Portrait de ${artist.name}`} loading="lazy"/><i className="portrait-ring"/></div><b>{artist.name}</b><small>{artist.role}</small><p>{artist.bio}</p><span className="artist-open">Voir ses chants →</span></Link>)}</div>
+            <div className="artist-grid">{artists.map((artist) => <Link className="artist-card" key={artist.name} href={`/artists/${artist.slug}`}><div className={`artist-portrait ${artist.color}`}><img src={artist.image} alt={`Portrait de ${artist.name}`} loading="lazy"/><i className="portrait-ring"/></div><b>{artist.name}</b><small>{artist.role}</small><p>{artist.bio}</p><span className="artist-open">Voir ses chants →</span></Link>)}</div>
           </section>
 
           <section className="editorial-strip" id="events"><div><div className="section-kicker">RENDEZ-VOUS</div><h2>La musique se vit<br/>aussi ensemble.</h2><p>Concerts, rencontres et temps forts de la communauté.</p></div><Link className="editorial-link" href="/events">Découvrir les événements <Icon name="arrow" size={16}/></Link><div className="editorial-number">AC <span>·</span> ENSEMBLE</div></section>

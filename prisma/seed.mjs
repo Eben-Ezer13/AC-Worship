@@ -1,9 +1,11 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const tracks = require("../src/data/tracks.json");
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 const artistRecords = [
   { name: "June Grogui", slug: "june-grogui", bio: "Que les coeurs se tournent vers le Créateur au travers de la louange.", imageUrl: "/media/artists/june-grogui.jpg" },
   { name: "Yoann Adopo", slug: "yoann-adopo", bio: "Des chants pour célébrer Jésus et édifier l’Église.", imageUrl: "/media/artists/yoann-adopo.jpg" },
