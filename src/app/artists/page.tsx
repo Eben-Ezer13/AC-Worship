@@ -3,6 +3,11 @@ import { artists, tracks } from "@/lib/catalog";
 import { prisma } from "@/lib/prisma";
 import { formatListenerCount, getMonthlyListenerCounts } from "@/lib/audience";
 export const dynamic = "force-dynamic";
+function getCardBio(artist: { slug: string; bio: string }) {
+  return artist.slug === "yoann-adopo"
+    ? "Conducteur de louange au sein de la Famille des Assemblées Chrétiennes, Yoann partage des chants pour célébrer Jésus, édifier l’Église et faire connaître l’Évangile."
+    : artist.bio;
+}
 export default async function ArtistsPage() {
   const now = new Date();
   let directory: { name: string; slug: string; role?: string; bio: string; image: string; count?: number; listeners: number | null }[] = artists.map((artist) => ({ ...artist, listeners: null }));
@@ -15,5 +20,5 @@ export default async function ArtistsPage() {
       directory.push(...artists.filter((artist) => !publishedSlugs.has(artist.slug)).map((artist) => ({ ...artist, count: tracks.filter((track) => track.artist === artist.name).length, listeners: null })));
     }
   } catch { /* Catalogue statique disponible hors connexion à la base */ }
-  return <main className="catalog-page"><header className="catalog-top"><Link href="/">← AC Worship</Link><Link href="/library">Ma biblioth&egrave;que</Link></header><span className="section-kicker">LES VOIX DE L’AC</span><h1>Les artistes</h1><p className="catalog-intro">Découvrez leurs parcours, leurs sorties et les chants qui font vivre la communauté.</p><div className="artist-directory">{directory.map((artist) => <Link className="directory-card" href={`/artists/${artist.slug}`} key={artist.slug}><div className="directory-image"><img src={artist.image} alt={artist.name} loading="lazy" decoding="async"/></div><div className="directory-copy"><span>ARTISTE · {artist.count ?? tracks.filter((t) => t.artist === artist.name).length} TITRES</span><h2>{artist.name}</h2><p>{artist.bio}</p><div className="monthly-listeners"><b>{formatListenerCount(artist.listeners)}</b><small>auditeurs mensuels</small></div><b>Visiter l’espace artiste →</b></div></Link>)}</div></main>;
+  return <main className="catalog-page"><header className="catalog-top"><Link href="/">← AC Worship</Link><Link href="/library">Ma biblioth&egrave;que</Link></header><span className="section-kicker">LES VOIX DE L’AC</span><h1>Les artistes</h1><p className="catalog-intro">Découvrez leurs parcours, leurs sorties et les chants qui font vivre la communauté.</p><div className="artist-directory">{directory.map((artist) => <Link className="directory-card" href={`/artists/${artist.slug}`} key={artist.slug}><div className="directory-image"><img src={artist.image} alt={artist.name} loading="lazy" decoding="async"/></div><div className="directory-copy"><span>ARTISTE · {artist.count ?? tracks.filter((t) => t.artist === artist.name).length} TITRES</span><h2>{artist.name}</h2><p>{getCardBio(artist)}</p><div className="monthly-listeners"><b>{formatListenerCount(artist.listeners)}</b><small>auditeurs mensuels</small></div><b>Visiter l’espace artiste →</b></div></Link>)}</div></main>;
 }
