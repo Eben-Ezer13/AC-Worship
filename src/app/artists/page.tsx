@@ -4,9 +4,13 @@ import { prisma } from "@/lib/prisma";
 import { formatListenerCount, getMonthlyListenerCounts } from "@/lib/audience";
 export const dynamic = "force-dynamic";
 function getCardBio(artist: { slug: string; bio: string }) {
-  return artist.slug === "yoann-adopo"
-    ? "Conducteur de louange au sein de la Famille des Assemblées Chrétiennes, Yoann partage des chants pour célébrer Jésus, édifier l’Église et faire connaître l’Évangile."
-    : artist.bio;
+  if (artist.slug === "yoann-adopo") {
+    return "Conducteur de louange, il partage des chants pour célébrer Jésus et faire connaître l’Évangile.";
+  }
+  if (artist.slug === "chantal-cofie-agama") {
+    return "À travers le gospel, Chantal porte un message d’espérance, de restauration et de foi en Jésus.";
+  }
+  return artist.bio;
 }
 export default async function ArtistsPage() {
   const now = new Date();
